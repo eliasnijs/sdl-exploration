@@ -1,5 +1,3 @@
-/* See LICENSE file for copyright and license details. */
-
 /* include <stdint.h> */
 
 typedef int8_t   S8;

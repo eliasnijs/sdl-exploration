@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include "baselayer.h"
 #include "config.h"
@@ -50,6 +51,58 @@ SDL_die(SDL_Context *sdl_context)
   SDL_Quit();
 }
 
+internal void
+SDL_process_pending_messages()
+{
+  SDL_Event sdl_event; 
+  while (SDL_PollEvent(&sdl_event))
+  {
+    switch (sdl_event.type) {
+      case (SDL_QUIT): {
+        global_running = false;
+      } break;
+      case (SDL_KEYDOWN):
+      case (SDL_KEYUP): {
+        // TODO(Elias): handle modded keystates (shift, ctrl, ...)
+        U32 key = sdl_event.key.keysym.sym;
+        if (key == SDLK_w) 
+        { 
+        }
+        else if (key == SDLK_a) 
+        { 
+        }
+        else if (key == SDLK_s) 
+        { 
+        }
+        else if (key == SDLK_d) 
+        { 
+        }
+        else if (key == SDLK_UP) 
+        { 
+        }
+        else if (key == SDLK_DOWN) 
+        { 
+        }
+        else if (key == SDLK_LEFT) 
+        { 
+        }
+        else if (key == SDLK_RIGHT) 
+        { 
+        }
+        else if (key == SDLK_SPACE)
+        { 
+        }
+        else if (key == SDLK_RETURN)
+        { 
+        }
+        else if (key == SDLK_ESCAPE)
+        { 
+        }
+      } break;
+    }
+  }
+}
+
 S32 
 main()
 {
@@ -58,18 +111,11 @@ main()
 
   if (SDL_initialise(&sdl_context))
   {
-    SDL_Event sdl_event; 
+    // NOTE(Elias): main game loop
     while (global_running)
     {
-      // NOTE(Elias): Poll events
-      while (SDL_PollEvent(&sdl_event))
-      {
-        switch (sdl_event.type) {
-          case (SDL_QUIT): {
-            global_running = false;
-          } break;
-        }
-      }
+      // NOTE(Elias): handle sdl pending messages 
+      SDL_process_pending_messages();
       // NOTE(Elias): update windoww surface
       SDL_UpdateWindowSurface(sdl_context.window);
     }

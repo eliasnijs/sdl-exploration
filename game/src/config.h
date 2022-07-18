@@ -1,3 +1,3 @@
 // NOTE(Elias): window properties
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+global_variable const S32 SCREEN_WIDTH = 640;
+global_variable const S32 SCREEN_HEIGHT = 480;
