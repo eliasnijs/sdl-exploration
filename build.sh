@@ -1,15 +1,17 @@
 #!/bin/sh
 
+# IMPORTANT(Elias): Assumes you are on linux!
+
 # files
 SOURCE="./game/src/game.cpp"
 OUTPUT="./build/lupy-niceguy-game"
 
 # includes and libs
 INCS=""
-LIBS=""
+LIBS="-lSDL2main -lSDL2 "
 
 # flags
-DFLAGS="-DLVE_INTERNAL -DLVE_SLOW"
+DFLAGS=""
 CPPFLAGS="-D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=2 -DVERSION=\"${VERSION}\""
 CFLAGS="-g -Wall -Wno-deprecated-declarations -O0 -O2 ${INCS} ${CPPFLAGS}"
 LDFLAGS=${LIBS}
