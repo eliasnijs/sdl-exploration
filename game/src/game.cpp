@@ -9,10 +9,31 @@
 struct SDL_Context 
 {
   SDL_Window  *window;
-  SDL_Surface *screen_surface;
+  SDL_Surface *surface;
 };
 
 global_variable B32 global_running = true;
+
+internal void
+render_pattern(SDL_Surface *surface, S32 offset)
+{
+  S32 bytes_per_pixel = surface->format->BytesPerPixel;
+  for (S32 row = 0;
+       row < surface->h;
+       ++row)
+  {
+    for (S32 column = 0;
+         column < surface->w;
+         ++column)
+    {
+      U8 *p = (U8 *)surface->pixels + (row * surface->pitch) + (column * bytes_per_pixel);
+      U8 red_channel = (U8) 255;
+      U8 green_channel = (U8) ((row + offset) % surface->h);
+      U8 blue_channel =  (U8) ((column + offset) % surface->w);
+      *(U32 *)p = (red_channel << 16) | (green_channel << 8) | (blue_channel);
+    }
+  }
+}
 
 internal B32 
 SDL_initialise(SDL_Context *sdl_context)
@@ -25,9 +46,9 @@ SDL_initialise(SDL_Context *sdl_context)
                                            SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (sdl_context->window)
     {
-      sdl_context->screen_surface = SDL_GetWindowSurface(sdl_context->window);
-      SDL_FillRect(sdl_context->screen_surface, 0, 
-                   SDL_MapRGB(sdl_context->screen_surface->format, 0x00, 0x00, 0x00));
+      sdl_context->surface = SDL_GetWindowSurface(sdl_context->window);
+      SDL_FillRect(sdl_context->surface, 0, 
+                   SDL_MapRGB(sdl_context->surface->format, 0x00, 0x00, 0x00));
       SDL_UpdateWindowSurface(sdl_context->window);
     }
     else
@@ -64,6 +85,7 @@ SDL_process_pending_messages()
       case (SDL_KEYDOWN):
       case (SDL_KEYUP): {
         // TODO(Elias): handle modded keystates (shift, ctrl, ...)
+        // TODO(Elias): still flawed, take a closer look 
         U32 key = sdl_event.key.keysym.sym;
         if (key == SDLK_w) 
         { 
@@ -111,13 +133,17 @@ main()
 
   if (SDL_initialise(&sdl_context))
   {
-    // NOTE(Elias): main game loop
+    S32 counter = 0, offset = 0;
     while (global_running)
     {
-      // NOTE(Elias): handle sdl pending messages 
       SDL_process_pending_messages();
-      // NOTE(Elias): update windoww surface
+      render_pattern(sdl_context.surface, offset);
       SDL_UpdateWindowSurface(sdl_context.window);
+      ++counter;
+      if (counter % 5 == 0) 
+      {
+        ++offset;
+      }
     }
   }
   else 
@@ -125,7 +151,6 @@ main()
     // TODO(Elias): Logging 
   }
   SDL_die(&sdl_context);
+  
   return(!success);
 }
-
-
