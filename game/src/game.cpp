@@ -18,6 +18,7 @@ internal void
 render_pattern(SDL_Surface *surface, S32 offset)
 {
   S32 bytes_per_pixel = surface->format->BytesPerPixel;
+  S32 pattern_length = 2000;
   for (S32 row = 0;
        row < surface->h;
        ++row)
@@ -28,8 +29,8 @@ render_pattern(SDL_Surface *surface, S32 offset)
     {
       U8 *p = (U8 *)surface->pixels + (row * surface->pitch) + (column * bytes_per_pixel);
       U8 red_channel = (U8) 255;
-      U8 green_channel = (U8) ((row + offset) % surface->h);
-      U8 blue_channel =  (U8) ((column + offset) % surface->w);
+      U8 green_channel = (U8) ((row + offset) % pattern_length);
+      U8 blue_channel =  (U8) ((column + offset) % pattern_length);
       *(U32 *)p = (red_channel << 16) | (green_channel << 8) | (blue_channel);
     }
   }
@@ -133,16 +134,22 @@ main()
 
   if (SDL_initialise(&sdl_context))
   {
-    S32 counter = 0, offset = 0;
+    S32 counter = 0;
+    S32 start_tick; 
     while (global_running)
-    {
-      SDL_process_pending_messages();
-      render_pattern(sdl_context.surface, offset);
-      SDL_UpdateWindowSurface(sdl_context.window);
+    { 
       ++counter;
-      if (counter % 5 == 0) 
+      start_tick = SDL_GetTicks();
+      
+      SDL_process_pending_messages();
+      
+      render_pattern(sdl_context.surface, counter);
+      
+      SDL_UpdateWindowSurface(sdl_context.window);
+      
+      if ((1000 / FPS) > (SDL_GetTicks() - start_tick)) 
       {
-        ++offset;
+        SDL_Delay((1000 / FPS) - (SDL_GetTicks() - start_tick));
       }
     }
   }
