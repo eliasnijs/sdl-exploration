@@ -1,8 +1,8 @@
-./build/*
+build/*
 !/build/_
 
-./game/data/*
+game/data/*
 !./game/data/_
 
-./game/resources/*
+game/resources/*
 !./game/resouces/_

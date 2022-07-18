@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # files
-SOURCE="./engine/src/tve.c"
-OUTPUT="./build/tiny-vulkan-engine"
+SOURCE="./game/src/game.cpp"
+OUTPUT="./build/lupy-niceguy-game"
 
 # includes and libs
 INCS=""
-LIBS="-lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi"
+LIBS=""
 
 # flags
 DFLAGS="-DLVE_INTERNAL -DLVE_SLOW"
