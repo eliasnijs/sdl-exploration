@@ -1,12 +1,12 @@
 
 
-#SDL GAME PROJECT
+SDL GAME PROJECT
 
-#1. About
+1. About
 
 cool game
 
-#2. Setup build enviroment 
+2. Setup build enviroment 
 
 Install the necessary libs:
   1. install sdl2 lib
