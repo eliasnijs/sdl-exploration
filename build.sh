@@ -3,7 +3,7 @@
 # IMPORTANT(Elias): Assumes you are on linux!
 
 # files
-SOURCE="./game/src/game.cpp"
+SOURCE="./game/src/sdl_lng.cpp"
 OUTPUT="./build/lupy-niceguy-game"
 
 # includes and libs
