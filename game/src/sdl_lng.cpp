@@ -94,11 +94,11 @@ SDL_process_pending_messages(GameInput *game_input)
         }
         else if (key == SDLK_DOWN) 
         { 
-          SDL_process_keyboard_input(&game_input->move_left, key_is_down);
+          SDL_process_keyboard_input(&game_input->move_down, key_is_down);
         }
         else if (key == SDLK_LEFT) 
         { 
-          SDL_process_keyboard_input(&game_input->move_down, key_is_down);
+          SDL_process_keyboard_input(&game_input->move_left, key_is_down);
         }
         else if (key == SDLK_RIGHT) 
         { 

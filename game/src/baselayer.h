@@ -33,5 +33,6 @@ typedef double   F64;
 
 #define Min(a,b) (((a)<(b))?(a):(b))
 #define Max(a,b) (((a)>(b))?(a):(b))
-#define Clamp(a,x,b) (((x)<(a))?(a):\
-                      ((b)<(x))?(b):(x))
+#define Clamp(a,x,b) (((x)<(a))?(a):((b)<(x))?(b):(x))
+#define ClampBot(a,b) (Max((a),(b)))
+#define ClampTop(a,b) (Min((a),(b)))

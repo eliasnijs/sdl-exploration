@@ -29,6 +29,10 @@ struct GameState
   S32 offset1;
   S32 offset2;
   S32 offset3;
+
+  S32 player_x;
+  S32 player_y;
+
 };
 
 internal void
