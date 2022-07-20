@@ -23,16 +23,23 @@ union GameInput
   };
 };
 
+struct Player 
+{
+  S32 x;
+  S32 y;
+  S32 w;
+  S32 h;
+  S32 x_velocity;
+  S32 y_velocity;
+  S32 max_x_velocity;
+  S32 max_y_velocity;
+  S32 m;
+};
+
 struct GameState
 {
   B32 is_initialised;
-  S32 offset1;
-  S32 offset2;
-  S32 offset3;
-
-  S32 player_x;
-  S32 player_y;
-
+  Player player;
 };
 
 internal void

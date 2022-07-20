@@ -33,7 +33,7 @@ render_background(SDL_Surface *surface)
          ++column)
     {
       U8 *p = (U8 *)surface->pixels + (row * surface->pitch) + (column * bytes_per_pixel);
-      *(U32 *)p = 0x00FFFFFF;
+      *(U32 *)p = 0x0095C8FF;
     }
   }
 }
@@ -68,41 +68,60 @@ game_update_and_render(GameState *game_state, GameInput *game_input, SDL_Surface
     // TODO(Elias): initialisation might be better in the sdl layer or as a seperate function, 
     // take a look at it
     // TODO(Elias): ... init game
+   
+    Player *player = &game_state->player;
+    player->w = 50;
+    player->h = 50;
+    player->x = ((surface->w - player->w) / 2);
+    player->y = (surface->h - player->h);
+    player->x_velocity = 0;
+    player->y_velocity = 0;
+    player->max_x_velocity = 12;
+    player->max_y_velocity = 12;
+    player->m = 12;
+
     game_state->is_initialised = true;
   }
 
-  S32 box_width = 50;
-  S32 box_height = 50;
-  
-  S32 box_x_speed = 5;
-  S32 box_y_speed = 5;
+  Player *player = &game_state->player;
+  S32 x_speed = 2;
+  S32 jump_speed = 12;
 
-  S32 x_velocity = 0;
-  S32 y_velocity = 0;
 
   if (game_input->move_up.ended_down)
   {
-    y_velocity -= box_y_speed;
-  }
-  if (game_input->move_down.ended_down)
-  {
-    y_velocity += box_y_speed;
+    if (player->y == (surface->h - player->h))
+    {
+      player->y_velocity -= jump_speed;
+    }
   }
   if (game_input->move_right.ended_down)
   {
-    x_velocity += box_x_speed;
+    player->x_velocity += x_speed;
   }
   if (game_input->move_left.ended_down)
   {
-    x_velocity -= box_x_speed;
+    player->x_velocity -= x_speed;
   }
 
-  game_state->player_x = Clamp(0, game_state->player_x + x_velocity, surface->w - box_width);
-  game_state->player_y = Clamp(0, game_state->player_y + y_velocity, surface->h - box_height);
+  S32 x_friction = (player->x_velocity == 0) ? 0 : 
+                   (player->x_velocity < 0) ? -1 : 1;
+
+  player->x_velocity = Clamp(-player->max_x_velocity, 
+                             player->x_velocity - x_friction, 
+                             player->max_x_velocity);
+
+  S32 gravity = player->m * (9.8 / 100);
+  player->y_velocity -= -gravity;
+
+  player->x = Clamp(0, player->x + player->x_velocity, surface->w - player->w);
+  player->y = Clamp(0, player->y + player->y_velocity, surface->h - player->h);
+  if (player->y == (surface->h - player->h)) 
+  {
+    player->y_velocity = 0; 
+  }
 
   render_background(surface);
-  draw_box(surface, game_state->player_x, game_state->player_y, box_width, box_height, 0x001dbcd1);
-  
-  ++game_state->offset1;
+  draw_box(surface, player->x, player->y, player->w, player->h, 0x00000000);
 }
 
