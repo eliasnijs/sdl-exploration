@@ -63,14 +63,36 @@ SDL_process_pending_messages(GameInput *game_input)
   {
     B32 key_is_down = false;
     switch (sdl_event.type) {
-      case (SDL_QUIT): {
+      case (SDL_QUIT): 
+      {
         global_running = false;
       } break;
-      // TODO(Elias): handle modded keystates (shift, ctrl, ...)
-      // TODO(Elias): still flawed, take a closer look 
+      case (SDL_MOUSEMOTION): 
+      {
+        game_input->mouse_x = sdl_event.motion.x;
+        game_input->mouse_y = sdl_event.motion.y;
+      } break;
+      case (SDL_MOUSEBUTTONDOWN):
+        key_is_down = true;
+      case (SDL_MOUSEBUTTONUP):
+      {
+        U8 button = sdl_event.button.button;
+        if (button == SDL_BUTTON_LEFT) 
+        {
+          SDL_process_keyboard_input(&game_input->mouse_left, key_is_down);
+        }
+        else if (button == SDL_BUTTON_RIGHT)
+        {
+          SDL_process_keyboard_input(&game_input->mouse_right, key_is_down);
+        }
+      } break;
       case (SDL_KEYDOWN): 
         key_is_down = true;
-      case (SDL_KEYUP): {
+        // NOTE(Elias): no break;
+      case (SDL_KEYUP): 
+      {
+        // TODO(Elias): handle modded keystates (shift, ctrl, ...)
+        // TODO(Elias): still flawed, take a closer look 
         U32 key = sdl_event.key.keysym.sym;
         if (key == SDLK_w) 
         { 

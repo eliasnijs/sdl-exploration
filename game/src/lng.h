@@ -3,23 +3,37 @@ struct GameButtonState
   B32 ended_down; 
 };
 
-union GameInput 
+struct GameInput 
 {
-  GameButtonState game_buttons[12];
-  struct 
+  union  
   {
-    GameButtonState move_up; 
-    GameButtonState move_left; 
-    GameButtonState move_right; 
-    GameButtonState move_down; 
-    GameButtonState action1;
-    GameButtonState action2;
-    GameButtonState action3;
-    GameButtonState action4;
-    GameButtonState action5;
-    GameButtonState action6;
-    GameButtonState action7;
-    GameButtonState action8;
+    GameButtonState game_buttons[14];
+    struct 
+    {
+      GameButtonState move_up; 
+      GameButtonState move_left; 
+      GameButtonState move_right; 
+      GameButtonState move_down; 
+      GameButtonState mouse_left; 
+      GameButtonState mouse_right; 
+      GameButtonState action1;
+      GameButtonState action2;
+      GameButtonState action3;
+      GameButtonState action4;
+      GameButtonState action5;
+      GameButtonState action6;
+      GameButtonState action7;
+      GameButtonState action8;
+    };
+  };
+  union 
+  {
+    S32 mouse_coordinates[2];
+    struct 
+    {
+      S32 mouse_x;
+      S32 mouse_y;
+    };
   };
 };
 
@@ -29,17 +43,36 @@ struct Player
   S32 y;
   S32 w;
   S32 h;
-  S32 x_velocity;
-  S32 y_velocity;
-  S32 max_x_velocity;
-  S32 max_y_velocity;
+  F32 x_velocity;
+  F32 y_velocity;
+  F32 max_x_velocity;
+  F32 max_y_velocity;
   S32 m;
+};
+
+struct Bullet
+{
+  B32 is_active;
+  S32 x;
+  S32 y;
+  F32 x_velocity;
+  F32 y_velocity;
+};
+
+struct Sprite
+{
+  S32 width;
+  S32 height;
+  S32 *pixels;
 };
 
 struct GameState
 {
   B32 is_initialised;
   Player player;
+
+  S32 bullet_counter;
+  Bullet bullets[120];
 };
 
 internal void
