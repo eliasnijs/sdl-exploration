@@ -11,7 +11,6 @@ cool game
 Install the necessary libs:
   1. install sdl2 lib
   On debian: `sudo apt install libsdl2-dev`
-  Other: don't fucking know, figure it out yourself
 
 
 

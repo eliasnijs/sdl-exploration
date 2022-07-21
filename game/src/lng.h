@@ -47,36 +47,23 @@ struct Player
   F32 y_velocity;
   F32 max_x_velocity;
   F32 max_y_velocity;
+  S32 s;
+  S32 s_jump;
   S32 m;
-};
-
-struct Bullet
-{
-  B32 is_active;
-  S32 x;
-  S32 y;
-  F32 x_velocity;
-  F32 y_velocity;
-};
-
-struct Sprite
-{
-  S32 width;
-  S32 height;
-  S32 *pixels;
+  B32 is_grounded;
 };
 
 struct GameState
 {
   B32 is_initialised;
   Player player;
-
-  S32 bullet_counter;
-  Bullet bullets[120];
 };
 
 internal void
-render_pattern(SDL_Surface *surface, S32 offset1, S32 offset2, S32 offset3);
+render_background(SDL_Surface *surface);
+
+internal void
+draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color);
 
 void
 game_update_and_render(GameState *game_state, GameInput *game_input, SDL_Surface *surface);
