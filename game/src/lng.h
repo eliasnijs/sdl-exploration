@@ -44,15 +44,21 @@ struct Player
   F32 x_velocity, y_velocity;
   F32 max_x_velocity, max_y_velocity;
   S32 s_x, s_y;
-  S32 m;
+  F32 m;
   B32 is_grounded;
+};
+
+struct Environment
+{
+  F32 friction_ground;
+  F32 friction_sky;
+  F32 gravity_const;
 };
 
 struct GameState
 {
-  B32 is_initialised;
-  
-  Player player;
+  Environment env;
+  Player player; 
 };
 
 internal void

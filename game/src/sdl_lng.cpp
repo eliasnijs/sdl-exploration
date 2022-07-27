@@ -69,8 +69,7 @@ SDL_process_pending_messages(GameInput *game_input)
       } break;
       case (SDL_MOUSEMOTION): 
       {
-        game_input->mouse_x = sdl_event.motion.x;
-        game_input->mouse_y = sdl_event.motion.y;
+        game_input->mouse_x = sdl_event.motion.x; game_input->mouse_y = sdl_event.motion.y;
       } break;
       case (SDL_MOUSEBUTTONDOWN):
         key_is_down = true;
@@ -148,25 +147,36 @@ main()
   SDL_Context sdl_context = {}; 
   if (SDL_initialise(&sdl_context))
   {
+    // NOTE(Elias): Initialisation
     S32 start_tick; 
+    S32 counter = 0;
     GameState game_state = {};
     GameInput game_input = {}; 
+    
+    game_initialise(&game_state, sdl_context.surface);
+    
+    // NOTE(Elias): Game loop
     while (global_running)
     { 
       start_tick = SDL_GetTicks(); 
+      
       SDL_process_pending_messages(&game_input); 
-      game_update_and_render(&game_state, &game_input, sdl_context.surface); 
+      game_update_and_render(&game_state, &game_input, sdl_context.surface, counter); 
       SDL_UpdateWindowSurface(sdl_context.window); 
+      ++counter;
+      
       // NOTE(Elias): cap framerate
-      if ((1000 / FPS) > (SDL_GetTicks() - start_tick)) 
+      if ((1000.0 / FPS) > (SDL_GetTicks() - start_tick)) 
       {
-        SDL_Delay((1000 / FPS) - (SDL_GetTicks() - start_tick));
+        SDL_Delay((1000.0 / FPS) - (F64)(SDL_GetTicks() - start_tick));
       }
     }
+
   }
   else 
   {
-    // TODO(Elias): Logging 
+    printf("failed to initliase SDL\n");
+    success = false;
   }
   SDL_die(&sdl_context);
   

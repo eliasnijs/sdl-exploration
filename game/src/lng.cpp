@@ -39,6 +39,14 @@ draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color)
 }
 
 internal void
+env_initiliase(Environment *env)
+{
+  env->friction_ground = 0.7f;
+  env->friction_sky = 0.25f; 
+  env->gravity_const = 9.81f;
+}
+
+internal void
 player_initialise(Player *player, S32 window_w, S32 window_h)
 {
   player->w              = 50;
@@ -52,76 +60,107 @@ player_initialise(Player *player, S32 window_w, S32 window_h)
   player->x_velocity     = 0;
   player->y_velocity     = 0;
 
-  player->max_x_velocity = 12;
-  player->max_y_velocity = 100;
-  player->s_x            = 6;
-  player->s_y            = 64;
-  player->m              = 2;
+  player->max_x_velocity = 30;
+  player->max_y_velocity = 10000;
+  player->s_x            = 2;
+  player->s_y            = 24;
+  player->m              = 0.002f;
 }
 
-void
-game_update_and_render(GameState *game_state, GameInput *game_input, SDL_Surface *surface)
+internal void 
+player_update(Player *player, Environment *env, S32 screen_width, S32 screen_height)
 {
-  if (!game_state->is_initialised)
-  {
-    // TODO(Elias): initialisation might be better in the sdl layer or as a seperate function, 
-    // take a look at it
-    // TODO(Elias): ... init game
-    player_initialise(&game_state->player, surface->w, surface->h);
-    game_state->is_initialised = true;
-  } Player *player = &game_state->player;
+  // NOTE(Elias): Player Physiscs
+  F32 x_friction = (player->is_grounded) ? 
+    ((player->x_velocity < 0) ? -env->friction_ground : env->friction_ground) :
+    ((player->x_velocity < 0) ? -env->friction_sky : env->friction_sky);
 
-  // NOTE(Elias): Handle movement if the player is grounded 
-  if (player->is_grounded)
-  {
-    if (game_input->move_up.ended_down)
-    {
-      player->y_velocity -= player->s_y;
-    }
-    if (game_input->move_right.ended_down)
-    {
-      player->x_velocity += player->s_x;
-    }
-    if (game_input->move_left.ended_down)
-    {
-      player->x_velocity -= player->s_x;
-    }
-  } 
-
-  // NOTE(Elias): Update velocities
-  // NOTE(Elias): Add friction for more natural movement.
-  // There are 2 cases: ground friction and sky friction 
-  F32 ground_friction = 0.1f, sky_friction = 0.25f;
-
-  F32 x_friction = (player->is_grounded) ? ((player->x_velocity < 0) ? -ground_friction : ground_friction) :
-                                           ((player->x_velocity < 0) ? -sky_friction : sky_friction);
-
-  player->x_velocity = (player->x_velocity >= 0) ? ClampBot(0, player->x_velocity - x_friction) : 
-                                                   ClampTop(player->x_velocity - x_friction, 0);
+  player->x_velocity = (player->x_velocity >= 0) ? 
+    ClampBot(0, player->x_velocity - x_friction) : 
+    ClampTop(player->x_velocity - x_friction, 0);
   player->x_velocity = Clamp(-player->max_x_velocity, player->x_velocity, player->max_x_velocity);
 
-  // NOTE(Elias): Apply gravity
-  F32 gravity_weight = 0.1f, height_weight = 0.01f;
-  player->y_velocity += player->m * (9.8f * gravity_weight) * ((surface->h - player->y) * height_weight);
+  F32 gravity = player->m * env->gravity_const * (screen_height - player->y);
+  player->y_velocity += gravity;
 
-  // NOTE(Elias): Adjust player position according to the player's velocities
-  // and clamp the position to the screen border.
-  player->x = Clamp(0, player->x + player->x_velocity, surface->w - player->w);
-  player->y = Clamp(0, player->y + player->y_velocity, surface->h - player->h);
+  // NOTE(Elias): For now, clamp the x position to the screen border.
+  // TODO(Elias): Remove clamp when collision and correct rendering for offscreen 
+  // entities is implemented.
+  player->x = Clamp(0, player->x + player->x_velocity, screen_width - player->w);
+  player->y = ClampTop(player->y + player->y_velocity, screen_height - player->h);
   
   // NOTE(Elias): Check if the player is grounded after move. 
-  // Cancel y velocity if it is.
-  if (player->y == (surface->h - player->h)) 
+  // Cancel y velocity if he is.
+  // TODO(Elias): Make this work with a collision check instead of the bottom
+  // of the screen.
+  player->is_grounded = false;
+  if (player->y == (screen_height - player->h)) 
   {
     player->y_velocity = 0;
     player->is_grounded = true; 
   } 
-  else
+}
+
+internal void
+game_initialise(GameState *game_state, SDL_Surface *surface)
+{
+  env_initiliase(&game_state->env);
+  player_initialise(&game_state->player, surface->w, surface->h);
+}
+
+internal void
+game_update_and_render(GameState *game_state, GameInput *game_input, 
+                       SDL_Surface *surface, int counter)
+{
+  Player *player = &game_state->player;
+  Environment *env = &game_state->env;
+
+  // NOTE(Elias): Handle input
+  if (game_input->move_up.ended_down)
   {
-    player->is_grounded = false;
+    if (player->is_grounded)
+    {
+      player->y_velocity -= player->s_y;
+    }
   }
+  if (game_input->move_right.ended_down)
+  {
+    if (player->is_grounded)
+    {
+      player->x_velocity += player->s_x;
+    } 
+  }
+  if (game_input->move_left.ended_down)
+  {
+    if (player->is_grounded)
+    {
+      player->x_velocity -= player->s_x;
+    }
+  }
+  F32 gravity_const_change = 0.1f;
+  if (game_input->mouse_left.ended_down) {
+    env->gravity_const += gravity_const_change;
+  }
+  if (game_input->mouse_right.ended_down) 
+  {
+    env->gravity_const -= gravity_const_change;
+  }
+
+  // NOTE(Elias): Update state of the game
+  player_update(player, env, surface->w, surface->h);
 
   // NOTE(Elias): Render the scene to the buffer
   render_background(surface);
-  draw_box(surface, player->x, player->y, player->w, player->h, 0x0);
+  S32 player_disp_h = ClampBot(0, (player->y < 0) ? (player->h - (0-player->y)) : player->h);
+  S32 player_disp_y = (player->y >= 0) ? player->y: 0;
+  draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
+  
+  // NOTE(Elias): Log some stuff
+  S32 frames_between_log = 3;
+  if ((counter % frames_between_log) == 0)
+  {
+    printf("| Player: x = %6d, y = %6d, xv = %6.2f, yv = %6.2f | Env: g = %6.2f | \n", 
+           player->x, player->y, player->x_velocity, player->y_velocity, env->gravity_const);
+  } 
+
 }
