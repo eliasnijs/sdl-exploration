@@ -8,12 +8,12 @@ typedef uint8_t  U8;
 typedef uint16_t U16;
 typedef uint32_t U32;
 typedef uint64_t U64;
+typedef float    F32;
+typedef double   F64;
 typedef S8       B8;
 typedef S16      B16;
 typedef S32      B32;
 typedef S64      B64;
-typedef float    F32;
-typedef double   F64;
 
 #define internal static 
 #define local_persist static
@@ -30,10 +30,9 @@ typedef double   F64;
 #endif
 
 #define ArrayCount(a) (sizeof(a)/sizeof(*(a)))
-
-#define Min(a,b) (((a)<(b))?(a):(b))
-#define Max(a,b) (((a)>(b))?(a):(b))
-#define Clamp(a,x,b) (((x)<(a))?(a):((b)<(x))?(b):(x))
+#define Min(a,b)      (((a)<(b))?(a):(b))
+#define Max(a,b)      (((a)>(b))?(a):(b))
+#define Clamp(a,x,b)  (((x)<(a))?(a):((b)<(x))?(b):(x))
 #define ClampBot(a,b) (Max((a),(b)))
 #define ClampTop(a,b) (Min((a),(b)))
-#define Abs(a) (((a) < 0)?(-1 * (a)):(a))
+#define Abs(a)        (((a)<0)?(-(a)):(a))

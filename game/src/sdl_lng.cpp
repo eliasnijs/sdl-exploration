@@ -145,25 +145,18 @@ S32
 main()
 {
   B32 success = true;
-  SDL_Context sdl_context = {};
-
+  SDL_Context sdl_context = {}; 
   if (SDL_initialise(&sdl_context))
   {
     S32 start_tick; 
-
     GameState game_state = {};
-    GameInput game_input = {};
-    
+    GameInput game_input = {}; 
     while (global_running)
     { 
-      start_tick = SDL_GetTicks();
-      
-      SDL_process_pending_messages(&game_input);
-      
-      game_update_and_render(&game_state, &game_input, sdl_context.surface);
-      
-      SDL_UpdateWindowSurface(sdl_context.window);
-
+      start_tick = SDL_GetTicks(); 
+      SDL_process_pending_messages(&game_input); 
+      game_update_and_render(&game_state, &game_input, sdl_context.surface); 
+      SDL_UpdateWindowSurface(sdl_context.window); 
       // NOTE(Elias): cap framerate
       if ((1000 / FPS) > (SDL_GetTicks() - start_tick)) 
       {
