@@ -69,6 +69,9 @@ player_initialise(Player *player, S32 window_w, S32 window_h)
   player->s_x            = 3;
   player->s_y            = 24;
   player->m              = 0.002f;
+
+  //NOTE(lupy) counting doublejump
+  player->jumpcount      = 0;
 }
 
 internal void
@@ -110,7 +113,8 @@ player_update(Player *player, Environment *env, S32 screen_width, S32 screen_hei
   if (player->y == (screen_height - player->h)) 
   {
     player->y_velocity = 0;
-    player->is_grounded = true; 
+    player->is_grounded = true;
+    player->jumpcount = 0;
   } 
 }
 
@@ -127,7 +131,17 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
     if (player->is_grounded)
     {
       player->y_velocity -= player->s_y;
+      player->jumpcount++;
     }
+    else if (!player->is_grounded && player->jumpcount == 1 && player->y_velocity>0)
+    {
+      player->y_velocity = 0;
+      player->y_velocity -= player->s_y;
+      player->jumpcount++;
+    }
+    
+    
+    
   }
   if (game_input->move_right.ended_down)
   {
@@ -159,6 +173,8 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   S32 player_disp_h = ClampBot(0, (player->y < 0) ? (player->h - (0-player->y)) : player->h);
   S32 player_disp_y = ClampBot(0, player->y);
   draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
+
+  
   
   // NOTE(Elias): Log some stuff
 #if 1
@@ -167,10 +183,10 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   {
     // NOTE(Elias): Usefull website for ANSII Escape Codes
     // https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
-    printf("Player:   x = %6d   y = %6d   xv = %6.2f   yv = %6.2f\n"
+    printf("Player:   x = %6d   y = %6d   xv = %6.2f   yv = %6.2f jumpcount = %6d\n"
            "Env:      g = %6.2f \n"
            "\033[2A",
-           player->x, player->y, player->x_velocity, player->y_velocity, env->gravity_const);
+           player->x, player->y, player->x_velocity, player->y_velocity, player->jumpcount, env->gravity_const);
   }
 #endif
 

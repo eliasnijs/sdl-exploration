@@ -46,6 +46,7 @@ struct Player
   S32 s_x, s_y;
   F32 m;
   B32 is_grounded;
+  S32 jumpcount;
 };
 
 struct Environment
