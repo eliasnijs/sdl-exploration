@@ -49,7 +49,7 @@ SDL_die(SDL_Context *sdl_context)
   SDL_Quit();
 }
 
-void
+internal void
 SDL_process_keyboard_input(GameButtonState *state, B32 is_down)
 {
   state->ended_down = is_down;
@@ -149,7 +149,7 @@ main()
   {
     // NOTE(Elias): Initialisation
     S32 start_tick; 
-    S32 counter = 0;
+    S64 counter = 0;
     GameState game_state = {};
     GameInput game_input = {}; 
     

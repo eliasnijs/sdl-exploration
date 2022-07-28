@@ -29,10 +29,10 @@ typedef S64      B64;
 # define Assert(c)
 #endif
 
-#define ArrayCount(a) (sizeof(a)/sizeof(*(a)))
-#define Min(a,b)      (((a)<(b))?(a):(b))
-#define Max(a,b)      (((a)>(b))?(a):(b))
-#define Clamp(a,x,b)  (((x)<(a))?(a):((b)<(x))?(b):(x))
-#define ClampBot(a,b) (Max((a),(b)))
-#define ClampTop(a,b) (Min((a),(b)))
-#define Abs(a)        (((a)<0)?(-(a)):(a))
+#define ArrayCount(a)   (sizeof(a)/sizeof(*(a)))
+#define Min(a,b)        (((a)<(b))?(a):(b))
+#define Max(a,b)        (((a)>(b))?(a):(b))
+#define Clamp(a,x,b)    (((x)<(a))?(a):((b)<(x))?(b):(x))
+#define ClampBot(a,b)   (Max((a),(b)))
+#define ClampTop(a,b)   (Min((a),(b)))
+#define Abs(a)          (((a)<0)?(-(a)):(a))

@@ -12,3 +12,6 @@ SDL_die(SDL_Context *sdl_context);
 
 internal void
 SDL_process_pending_messages(GameInput *game_input);
+
+internal void
+SDL_process_keyboard_input(GameButtonState *state, B32 is_down);

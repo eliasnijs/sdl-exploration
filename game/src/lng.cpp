@@ -1,3 +1,5 @@
+// NOTE(Elias): Drawing functions
+
 internal void
 render_background(SDL_Surface *surface)
 {
@@ -38,6 +40,8 @@ draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color)
   }
 }
 
+// NOTE(Elias): Initialising functions
+
 internal void
 env_initiliase(Environment *env)
 {
@@ -60,12 +64,21 @@ player_initialise(Player *player, S32 window_w, S32 window_h)
   player->x_velocity     = 0;
   player->y_velocity     = 0;
 
-  player->max_x_velocity = 30;
-  player->max_y_velocity = 10000;
-  player->s_x            = 2;
+  player->max_x_velocity = 18;
+  player->max_y_velocity = 100;
+  player->s_x            = 3;
   player->s_y            = 24;
   player->m              = 0.002f;
 }
+
+internal void
+game_initialise(GameState *game_state, SDL_Surface *surface)
+{
+  env_initiliase(&game_state->env);
+  player_initialise(&game_state->player, surface->w, surface->h);
+} 
+
+// NOTE(Elias): Update functions
 
 internal void 
 player_update(Player *player, Environment *env, S32 screen_width, S32 screen_height)
@@ -102,15 +115,8 @@ player_update(Player *player, Environment *env, S32 screen_width, S32 screen_hei
 }
 
 internal void
-game_initialise(GameState *game_state, SDL_Surface *surface)
-{
-  env_initiliase(&game_state->env);
-  player_initialise(&game_state->player, surface->w, surface->h);
-}
-
-internal void
 game_update_and_render(GameState *game_state, GameInput *game_input, 
-                       SDL_Surface *surface, int counter)
+                       SDL_Surface *surface, S64 counter)
 {
   Player *player = &game_state->player;
   Environment *env = &game_state->env;
@@ -141,8 +147,7 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   if (game_input->mouse_left.ended_down) {
     env->gravity_const += gravity_const_change;
   }
-  if (game_input->mouse_right.ended_down) 
-  {
+  if (game_input->mouse_right.ended_down) {
     env->gravity_const -= gravity_const_change;
   }
 
@@ -152,15 +157,21 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   // NOTE(Elias): Render the scene to the buffer
   render_background(surface);
   S32 player_disp_h = ClampBot(0, (player->y < 0) ? (player->h - (0-player->y)) : player->h);
-  S32 player_disp_y = (player->y >= 0) ? player->y: 0;
+  S32 player_disp_y = ClampBot(0, player->y);
   draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
   
   // NOTE(Elias): Log some stuff
+#if 1
   S32 frames_between_log = 3;
   if ((counter % frames_between_log) == 0)
   {
-    printf("| Player: x = %6d, y = %6d, xv = %6.2f, yv = %6.2f | Env: g = %6.2f | \n", 
+    // NOTE(Elias): Usefull website for ANSII Escape Codes
+    // https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+    printf("Player:   x = %6d   y = %6d   xv = %6.2f   yv = %6.2f\n"
+           "Env:      g = %6.2f \n"
+           "\033[2A",
            player->x, player->y, player->x_velocity, player->y_velocity, env->gravity_const);
-  } 
+  }
+#endif
 
 }

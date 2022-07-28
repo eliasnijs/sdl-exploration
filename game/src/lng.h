@@ -61,14 +61,19 @@ struct GameState
   Player player; 
 };
 
-internal void
-render_background(SDL_Surface *surface);
+// NOTE(Elias): Drawing functions
+internal void render_background(SDL_Surface *surface); 
+internal void draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color);
 
-internal void
-draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color);
+// NOTE(Elias): Initialising functions
+internal void game_initialise(GameState *game_state, SDL_Surface *surface);
+internal void env_initiliase(Environment *env);
+internal void player_initialise(Player *player, S32 window_w, S32 window_h); 
 
-internal void
-player_initialise(Player *player, S32 window_w, S32 window_h);
+// NOTE(Elias): Update functions
+internal void game_update_and_render(GameState *game_state, GameInput *game_input, 
+                                     SDL_Surface *surface, S64 counter);
+internal void player_update(Player *player, Environment *env, S32 screen_width, S32 screen_height);
 
-void
-game_update_and_render(GameState *game_state, GameInput *game_input, SDL_Surface *surface);
+
+
