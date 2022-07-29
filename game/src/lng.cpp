@@ -85,8 +85,8 @@ game_initialise(GameState *game_state, SDL_Surface *surface)
 
 internal B32 
 collision_1d(S32 l1, S32 r1, S32 l2, S32 r2) {
-  S32 result = (l1 < l2) ? -ClampBot(0, r1 - l2) : 
-               (l2 < l1) ? ClampBot(0, r2 - l1) : 0; 
+  S32 result = (l1 <= l2) ? -ClampBot(0, r1 - l2) : 
+               (l2 <= l1) ? ClampBot(0, r2 - l1) : 0; 
   return(result);
 }
 
@@ -129,9 +129,10 @@ player_update(Player *player, Environment *env, Platform *platform,
   S32V2 col_new = collision_2d(
       new_x, new_y, player->w, player->h, 
       platform->x, platform->y, platform->w, platform->h); 
+  
+  // printf("col_old: %3d x %3d, col_new: %3d x %3d\n", 
+  //       col_old.x, col_old.y, col_new.x, col_new.y);
  
-  // printf("x-yeet: %5d x %5d -> %5d x %5d\n", 
-      // col_old.x, col_old.y, col_new.x, col_new.y);
   if ((!col_old.x && col_new.x) && col_new.y)
   {
     // NOTE(Elias): x-collision detected
@@ -143,7 +144,7 @@ player_update(Player *player, Environment *env, Platform *platform,
     new_y = new_y + col_new.y;
     if (player->y_velocity >= 0)
     {
-      printf("%d -> %d\n", player->y, new_y);
+      // printf("%d -> %d\n", player->y, new_y);
       player->is_grounded = true;
     }
     player->y_velocity = 0;
