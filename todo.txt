@@ -4,7 +4,6 @@
 - loading sprites into memory
 - rendering sprites to surface buffer
 - camera system
-- single keypresses
 - sdl soundssytem
 - gamedesign
 - fontrendering
@@ -13,6 +12,7 @@
 
   2. IN PROGRESS 
 
+- single keypresses (Elias)
 
   3. DONE
 
