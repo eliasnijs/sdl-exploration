@@ -9,6 +9,7 @@
 - fontrendering
 - scenemanager
 - abstract physics stuff to vectors
+- support for mulitple platforms
 
   2. IN PROGRESS 
 
