@@ -9,12 +9,12 @@
 - gamedesign
 - fontrendering
 - scenemanager
-- abstract physics stuff to vectors
 
   2. IN PROGRESS 
 
 - single keypresses (Elias)
 - support for mulitple platforms (Lupy)
+- abstract physics stuff to vectors (Elias)
 
   3. DONE
 
