@@ -9,6 +9,7 @@
 - gamedesign
 - fontrendering
 - scenemanager
+- abstract physics stuff to vectors
 
   2. IN PROGRESS 
 
