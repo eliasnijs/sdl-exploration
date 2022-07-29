@@ -10,11 +10,11 @@
 - fontrendering
 - scenemanager
 - abstract physics stuff to vectors
-- support for mulitple platforms
 
   2. IN PROGRESS 
 
 - single keypresses (Elias)
+- support for mulitple platforms (Lupy)
 
   3. DONE
 
@@ -25,5 +25,6 @@
 - basic keyboard processing (Elias)
 - sdl instance (Elias)
 - basic platform (Elias)
+- basic sprite rendering (Lupy)
 
 
