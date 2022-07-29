@@ -1,0 +1,22 @@
+
+  1. TODO
+  
+- loading sprites into memory 
+- rendering sprites to surface buffer 
+- camera system
+- single keypresses
+- sdl soundssytem
+- gamedesign
+
+  2. IN PROGRESS 
+
+
+  3. DONE
+
+- collision system
+- basic player physics
+- box rendering
+- basic keyboard processing
+- sdl instance
+
+
