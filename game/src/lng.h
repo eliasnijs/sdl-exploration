@@ -58,6 +58,7 @@ struct Player
   B32 is_grounded;
   S32 jumpcount;
   S32V2 tailpos[10];
+  SDL_Surface* sprite;
 };
 
 struct Environment

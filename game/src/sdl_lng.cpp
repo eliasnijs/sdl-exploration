@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include <stdio.h>
 #include <stdint.h>
@@ -9,6 +10,7 @@
 #include "lng.h"
 #include "lng.cpp"
 #include "sdl_lng.h"
+
 
 global_variable B32 global_running = true;
 
@@ -25,7 +27,7 @@ SDL_initialise(SDL_Context *sdl_context)
     {
       sdl_context->surface = SDL_GetWindowSurface(sdl_context->window);
       SDL_FillRect(sdl_context->surface, 0, 
-                   SDL_MapRGB(sdl_context->surface->format, 0x00, 0x00, 0x00));
+                   SDL_MapRGB(sdl_context->surface->format, 0x00 , 0x00 , 0x00 ));
       SDL_UpdateWindowSurface(sdl_context->window);
     }
     else
@@ -45,6 +47,7 @@ SDL_initialise(SDL_Context *sdl_context)
 internal void 
 SDL_die(SDL_Context *sdl_context)
 {
+  SDL_FreeSurface(sdl_context->surface);
   SDL_DestroyWindow(sdl_context->window);
   SDL_Quit();
 }
@@ -181,6 +184,7 @@ main()
       }
     }
 
+    game_die(game_state);
     free(game_state);
 
   }
@@ -193,3 +197,5 @@ main()
   
   return(!success);
 }
+
+

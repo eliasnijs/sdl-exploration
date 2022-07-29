@@ -72,6 +72,13 @@ player_initialise(Player *player, S32 window_w, S32 window_h)
     player->tailpos[i].x = player->x;
     player->tailpos[i].y = player->y + i*5;
   }
+
+  player->sprite = SDL_LoadBMP("resources/images/player256x.bmp");
+  if (!player->sprite)
+  {
+    printf("Something went wrong loading player sprite.\n");
+  }
+  
 }
 
 internal void
@@ -263,9 +270,30 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
     }
   }
   
-  S32 player_disp_h = ClampBot(0, (player->y < 0) ? (player->h - (0-player->y)) : player->h); S32 player_disp_y = ClampBot(0, player->y);
+  S32 player_disp_h = ClampBot(0, (player->y < 0) ? (player->h - (0-player->y)) : player->h); 
+  S32 player_disp_y = ClampBot(0, player->y);
   draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
   draw_box(surface, platform->x, platform->y, platform->w, platform->h, 0x555555); 
-  
+
+  draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
+  draw_box(surface, platform->x, platform->y, platform->w, platform->h, 0x555555);
+
+  SDL_Rect destR;
+  destR.h = player->h;
+  destR.w = player->w;
+  destR.x = player->x;
+  destR.y = player->y;
+
+  SDL_BlitScaled(player->sprite, NULL, surface, &destR);
+
 }
+
+internal void
+game_die(GameState *game_state)
+{
+  free(game_state->player.sprite);
+} 
+
+
+
 
