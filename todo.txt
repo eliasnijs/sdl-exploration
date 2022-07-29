@@ -3,6 +3,7 @@
   
 - loading sprites into memory
 - rendering sprites to surface buffer
+- implement opengl
 - camera system
 - sdl soundssytem
 - gamedesign
