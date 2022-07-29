@@ -134,6 +134,7 @@ SDL_process_pending_messages(GameInput *game_input)
         }
         else if (key == SDLK_ESCAPE)
         { 
+          SDL_process_keyboard_input(&game_input->action8, key_is_down);
         }
       } break;
     }
@@ -158,9 +159,16 @@ main()
     // NOTE(Elias): Game loop
     while (global_running)
     { 
+      
       start_tick = SDL_GetTicks(); 
       
       SDL_process_pending_messages(&game_input); 
+      
+      if (game_input.action8.ended_down)
+      {
+        continue;  
+      }
+
       game_update_and_render(&game_state, &game_input, sdl_context.surface, counter); 
       SDL_UpdateWindowSurface(sdl_context.window); 
       ++counter;

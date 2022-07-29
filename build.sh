@@ -8,7 +8,7 @@ OUTPUT="./build/lupy-niceguy-game"
 
 # includes and libs
 INCS=""
-LIBS="-lSDL2main -lSDL2 "
+LIBS="-lSDL2main -lSDL2"
 
 # flags
 DFLAGS=""

@@ -37,6 +37,16 @@ struct GameInput
   };
 };
 
+union S32V2 
+{
+  S32 c[2];
+  struct  
+  {
+    S32 x;
+    S32 y;
+  };
+};
+
 struct Player 
 {
   S32 w, h;
@@ -56,10 +66,17 @@ struct Environment
   F32 gravity_const;
 };
 
+struct Platform
+{
+  S32 x, y;
+  S32 w, h;
+};
+
 struct GameState
 {
   Environment env;
   Player player; 
+  Platform platform;
 };
 
 // NOTE(Elias): Drawing functions
@@ -68,13 +85,13 @@ internal void draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height
 
 // NOTE(Elias): Initialising functions
 internal void game_initialise(GameState *game_state, SDL_Surface *surface);
-internal void env_initiliase(Environment *env);
 internal void player_initialise(Player *player, S32 window_w, S32 window_h); 
 
 // NOTE(Elias): Update functions
 internal void game_update_and_render(GameState *game_state, GameInput *game_input, 
                                      SDL_Surface *surface, S64 counter);
-internal void player_update(Player *player, Environment *env, S32 screen_width, S32 screen_height);
+internal void player_update(Player *player, Environment *env, Platform *platform, 
+                            S32 screen_width, S32 screen_height);
 
 
 
