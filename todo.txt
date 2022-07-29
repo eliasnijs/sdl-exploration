@@ -1,22 +1,26 @@
 
   1. TODO
   
-- loading sprites into memory 
-- rendering sprites to surface buffer 
+- loading sprites into memory
+- rendering sprites to surface buffer
 - camera system
 - single keypresses
 - sdl soundssytem
 - gamedesign
+- fontrendering
+- scenemanager
 
   2. IN PROGRESS 
 
 
   3. DONE
 
-- collision system
-- basic player physics
-- box rendering
-- basic keyboard processing
-- sdl instance
+- double jump (Lupy)
+- collision system (Elias)
+- basic player physics (Elias)
+- box rendering (Elias)
+- basic keyboard processing (Elias)
+- sdl instance (Elias)
+- basic platform (Elias)
 
 
