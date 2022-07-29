@@ -57,6 +57,7 @@ struct Player
   F32 m;
   B32 is_grounded;
   S32 jumpcount;
+  S32V2 tailpos[10];
 };
 
 struct Environment

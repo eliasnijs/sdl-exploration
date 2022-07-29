@@ -56,14 +56,22 @@ player_initialise(Player *player, S32 window_w, S32 window_h)
   player->x_velocity     = 0;
   player->y_velocity     = 0;
 
-  player->max_x_velocity = 9;
+  player->max_x_velocity = 12;
   player->max_y_velocity = 100;
   player->s_x            = 3;
-  player->s_y            = 24;
+  player->s_y            = 30;
   player->m              = 0.002f;
 
-  //NOTE(lupy) counting doublejump
+  // NOTE(Lupy): counting doublejump
   player->jumpcount      = 0;
+  
+  for (S32 i = 0;
+       i < (S32)ArrayCount(player->tailpos);
+       ++i)
+  {
+    player->tailpos[i].x = player->x;
+    player->tailpos[i].y = player->y + i*5;
+  }
 }
 
 internal void
@@ -160,7 +168,7 @@ player_update(Player *player, Environment *env, Platform *platform,
   {
     player->jumpcount = 0; 
   }
-  
+ 
 }
 
 internal void
@@ -179,8 +187,7 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
       player->y_velocity -= player->s_y;
       player->is_grounded = false;
       player->jumpcount++;
-    }
-    else if (!player->is_grounded && player->jumpcount == 1 && player->y_velocity>0)
+    } else if (!player->is_grounded && player->jumpcount == 1 && player->y_velocity>0)
     {
       player->y_velocity = 0;
       player->y_velocity -= player->s_y;
@@ -227,12 +234,38 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
            env->gravity_const);
   }
 #endif
+
+    for (S32 i = (S32)ArrayCount(player->tailpos) - 1;
+         i > 0;
+         --i)
+    {
+      player->tailpos[i] = player->tailpos[i-1];
+      player->tailpos[i].y += 5;
+    }
+    player->tailpos[0] = {player->x, player->y};
   
+
   // NOTE(Elias): Render the scene to the buffer
   render_background(surface);
-  S32 player_disp_h = ClampBot(0, (player->y < 0) ? (player->h - (0-player->y)) : player->h);
-  S32 player_disp_y = ClampBot(0, player->y);
+  
+  for (S32 i = (S32)ArrayCount(player->tailpos)-1;
+       i >= 0;
+       --i)
+  {
+    for (S32 j = 0;
+         j < 50;
+         ++j)
+    {
+      draw_box(surface, player->tailpos[i].x + j, player->tailpos[i].y, 1, player->h-i*5,
+          ((255  - ((i * 50 + j) / 5)) << 16) +
+          ((128 + ((i * 50 + j) / 5)) << 8) +
+          ((i * 50 + j) / 3));
+    }
+  }
+  
+  S32 player_disp_h = ClampBot(0, (player->y < 0) ? (player->h - (0-player->y)) : player->h); S32 player_disp_y = ClampBot(0, player->y);
   draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
-  draw_box(surface, platform->x, platform->y, platform->w, platform->h, 0x555555);
-
+  draw_box(surface, platform->x, platform->y, platform->w, platform->h, 0x555555); 
+  
 }
+

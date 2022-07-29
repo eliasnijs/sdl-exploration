@@ -151,10 +151,11 @@ main()
     // NOTE(Elias): Initialisation
     S32 start_tick; 
     S64 counter = 0;
-    GameState game_state = {};
+    // NOTE(Elias): Is there another way to allocate memory instead of malloc?
+    GameState *game_state = (GameState *)malloc(sizeof(GameState));
     GameInput game_input = {}; 
     
-    game_initialise(&game_state, sdl_context.surface);
+    game_initialise(game_state, sdl_context.surface);
     
     // NOTE(Elias): Game loop
     while (global_running)
@@ -169,7 +170,7 @@ main()
         continue;  
       }
 
-      game_update_and_render(&game_state, &game_input, sdl_context.surface, counter); 
+      game_update_and_render(game_state, &game_input, sdl_context.surface, counter); 
       SDL_UpdateWindowSurface(sdl_context.window); 
       ++counter;
       
@@ -179,6 +180,8 @@ main()
         SDL_Delay((1000.0 / FPS) - (F64)(SDL_GetTicks() - start_tick));
       }
     }
+
+    free(game_state);
 
   }
   else 
