@@ -4,4 +4,6 @@ build/*
 game/data/*
 !./game/data/_
 
+.vscode/*
+
 non_git_folder/*
