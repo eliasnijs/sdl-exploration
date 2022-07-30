@@ -55,7 +55,26 @@ SDL_die(SDL_Context *sdl_context)
 internal void
 SDL_process_keyboard_input(GameButtonState *state, B32 is_down)
 {
+  state->was_down = state->ended_down;
   state->ended_down = is_down;
+}
+
+internal void
+SDL_process_keyboard(GameInput *game_input)
+{
+  const U8 *state = SDL_GetKeyboardState(0); 
+  SDL_process_keyboard_input(&game_input->move_up, 
+                             state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP]); 
+  SDL_process_keyboard_input(&game_input->move_left, 
+                             state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT]); 
+  SDL_process_keyboard_input(&game_input->move_down, 
+                             state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN]); 
+  SDL_process_keyboard_input(&game_input->move_right, 
+                             state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT]); 
+  SDL_process_keyboard_input(&game_input->action1, 
+                             state[SDL_SCANCODE_SPACE]); 
+  SDL_process_keyboard_input(&game_input->action8, 
+                             state[SDL_SCANCODE_ESCAPE]); 
 }
 
 internal void
@@ -72,7 +91,8 @@ SDL_process_pending_messages(GameInput *game_input)
       } break;
       case (SDL_MOUSEMOTION): 
       {
-        game_input->mouse_x = sdl_event.motion.x; game_input->mouse_y = sdl_event.motion.y;
+        game_input->mouse_x = sdl_event.motion.x; 
+        game_input->mouse_y = sdl_event.motion.y;
       } break;
       case (SDL_MOUSEBUTTONDOWN):
         key_is_down = true;
@@ -86,58 +106,6 @@ SDL_process_pending_messages(GameInput *game_input)
         else if (button == SDL_BUTTON_RIGHT)
         {
           SDL_process_keyboard_input(&game_input->mouse_right, key_is_down);
-        }
-      } break;
-      case (SDL_KEYDOWN): 
-        key_is_down = true;
-        // NOTE(Elias): no break;
-      case (SDL_KEYUP): 
-      {
-        // TODO(Elias): handle modded keystates (shift, ctrl, ...)
-        // TODO(Elias): still flawed, take a closer look 
-        U32 key = sdl_event.key.keysym.sym;
-        if (key == SDLK_w) 
-        { 
-          SDL_process_keyboard_input(&game_input->move_up, key_is_down);
-        }
-        else if (key == SDLK_a) 
-        { 
-          SDL_process_keyboard_input(&game_input->move_left, key_is_down);
-        }
-        else if (key == SDLK_s) 
-        { 
-          SDL_process_keyboard_input(&game_input->move_down, key_is_down);
-        }
-        else if (key == SDLK_d) 
-        { 
-          SDL_process_keyboard_input(&game_input->move_right, key_is_down);
-        }
-        else if (key == SDLK_UP) 
-        { 
-          SDL_process_keyboard_input(&game_input->move_up, key_is_down);
-        }
-        else if (key == SDLK_DOWN) 
-        { 
-          SDL_process_keyboard_input(&game_input->move_down, key_is_down);
-        }
-        else if (key == SDLK_LEFT) 
-        { 
-          SDL_process_keyboard_input(&game_input->move_left, key_is_down);
-        }
-        else if (key == SDLK_RIGHT) 
-        { 
-          SDL_process_keyboard_input(&game_input->move_right, key_is_down);
-        }
-        else if (key == SDLK_SPACE)
-        { 
-          SDL_process_keyboard_input(&game_input->action1, key_is_down);
-        }
-        else if (key == SDLK_RETURN)
-        { 
-        }
-        else if (key == SDLK_ESCAPE)
-        { 
-          SDL_process_keyboard_input(&game_input->action8, key_is_down);
         }
       } break;
     }
@@ -167,7 +135,9 @@ main()
       start_tick = SDL_GetTicks(); 
       
       SDL_process_pending_messages(&game_input); 
-      
+      SDL_process_keyboard(&game_input);
+
+      // NOTE(Elias): Temporary pauze button
       if (game_input.action8.ended_down)
       {
         continue;  

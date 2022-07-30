@@ -1,5 +1,6 @@
 struct GameButtonState 
 {
+  B32 was_down; 
   B32 ended_down; 
 };
 
