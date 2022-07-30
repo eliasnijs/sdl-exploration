@@ -4,5 +4,4 @@ build/*
 game/data/*
 !./game/data/_
 
-game/resources/*
-!./game/resouces/_
+non_git_folder/*

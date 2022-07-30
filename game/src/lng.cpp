@@ -178,6 +178,24 @@ player_update(Player *player, Environment *env, Platform *platform,
  
 }
 
+inline internal B32 
+input_down(GameButtonState button)
+{
+  return(button.ended_down);
+}
+
+inline internal B32 
+input_down_single(GameButtonState button)
+{
+  return(button.ended_down && !button.was_down);
+}
+
+inline internal B32 
+input_up_single(GameButtonState button)
+{
+  return(!button.ended_down && button.was_down);
+}
+
 internal void
 game_update_and_render(GameState *game_state, GameInput *game_input, 
                        SDL_Surface *surface, S64 counter)
@@ -187,7 +205,7 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   Platform *platform = &game_state->platform;
 
   // NOTE(Elias): Handle input
-  if (game_input->move_up.ended_down)
+  if (input_down(game_input->move_up))
   {
     if (player->is_grounded)
     {
@@ -201,14 +219,14 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
       player->jumpcount++;
     } 
   }
-  if (game_input->move_right.ended_down)
+  if (input_down(game_input->move_right))
   {
     if (player->is_grounded)
     {
       player->x_velocity += player->s_x;
     } 
   }
-  if (game_input->move_left.ended_down)
+  if (input_down(game_input->move_left))
   {
     if (player->is_grounded)
     {
@@ -216,10 +234,10 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
     }
   }
   F32 gravity_const_change = 0.1f;
-  if (game_input->mouse_left.ended_down) {
+  if (input_down(game_input->mouse_left)) {
     env->gravity_const += gravity_const_change;
   }
-  if (game_input->mouse_right.ended_down) {
+  if (input_down(game_input->mouse_right)) {
     env->gravity_const -= gravity_const_change;
   }
 
@@ -253,8 +271,10 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   
 
   // NOTE(Elias): Render the scene to the buffer
-  render_background(surface);
   
+  render_background(surface);
+ 
+  // NOTE(Elias): Render player tail
   for (S32 i = (S32)ArrayCount(player->tailpos)-1;
        i >= 0;
        --i)
@@ -275,9 +295,6 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
   draw_box(surface, platform->x, platform->y, platform->w, platform->h, 0x555555); 
 
-  draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
-  draw_box(surface, platform->x, platform->y, platform->w, platform->h, 0x555555);
-
   SDL_Rect destR;
   destR.h = player->h;
   destR.w = player->w;
@@ -291,9 +308,5 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
 internal void
 game_die(GameState *game_state)
 {
-  free(game_state->player.sprite);
+  SDL_FreeSurface(game_state->player.sprite);
 } 
-
-
-
-
