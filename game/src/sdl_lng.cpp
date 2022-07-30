@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "baselayer.h"
+#include "baselayer.cpp"
 #include "config.h"
 
 #include "lng.h"
@@ -12,7 +13,41 @@
 #include "sdl_lng.h"
 
 
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): Global Variables
+
 global_variable B32 global_running = true;
+
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): SDL Keyboard 
+
+internal void
+SDL_process_keyboard_input(GameButtonState *state, B32 is_down)
+{
+  state->was_down = state->ended_down;
+  state->ended_down = is_down;
+}
+
+internal void
+SDL_process_keyboard(GameInput *game_input)
+{
+  const U8 *state = SDL_GetKeyboardState(0); 
+  SDL_process_keyboard_input(&game_input->move_up, 
+                             state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP]); 
+  SDL_process_keyboard_input(&game_input->move_left, 
+                             state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT]); 
+  SDL_process_keyboard_input(&game_input->move_down, 
+                             state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN]); 
+  SDL_process_keyboard_input(&game_input->move_right, 
+                             state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT]); 
+  SDL_process_keyboard_input(&game_input->action1, 
+                             state[SDL_SCANCODE_SPACE]); 
+  SDL_process_keyboard_input(&game_input->action8, 
+                             state[SDL_SCANCODE_ESCAPE]); 
+} 
+
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): SDL Basics
 
 internal B32 
 SDL_initialise(SDL_Context *sdl_context)
@@ -53,31 +88,6 @@ SDL_die(SDL_Context *sdl_context)
 }
 
 internal void
-SDL_process_keyboard_input(GameButtonState *state, B32 is_down)
-{
-  state->was_down = state->ended_down;
-  state->ended_down = is_down;
-}
-
-internal void
-SDL_process_keyboard(GameInput *game_input)
-{
-  const U8 *state = SDL_GetKeyboardState(0); 
-  SDL_process_keyboard_input(&game_input->move_up, 
-                             state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP]); 
-  SDL_process_keyboard_input(&game_input->move_left, 
-                             state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT]); 
-  SDL_process_keyboard_input(&game_input->move_down, 
-                             state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN]); 
-  SDL_process_keyboard_input(&game_input->move_right, 
-                             state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT]); 
-  SDL_process_keyboard_input(&game_input->action1, 
-                             state[SDL_SCANCODE_SPACE]); 
-  SDL_process_keyboard_input(&game_input->action8, 
-                             state[SDL_SCANCODE_ESCAPE]); 
-}
-
-internal void
 SDL_process_pending_messages(GameInput *game_input)
 {
   SDL_Event sdl_event; 
@@ -111,6 +121,9 @@ SDL_process_pending_messages(GameInput *game_input)
     }
   }
 }
+
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): MAIN
 
 S32 
 main()
