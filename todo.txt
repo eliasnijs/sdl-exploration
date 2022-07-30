@@ -1,6 +1,9 @@
 
   1. TODO
   
+- coordinate system
+  - world coordinate system
+  - world coordinate to screen coordinate
 - loading sprites into memory
 - rendering sprites to surface buffer
 - implement opengl
