@@ -16,6 +16,7 @@
 
   3. DONE
 
+- extend baselayer with vectors and intervals (Elias)
 - support for mulitple platforms (Lupy)
 - single keypresses (Elias)
 - double jump (Lupy)
