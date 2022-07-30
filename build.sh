@@ -13,10 +13,11 @@ LIBS="-lSDL2main -lSDL2"
 #  -fsanitize=address
 
 # flags
-DFLAGS=""
+WFLAGS="-Wno-deprecated-declarations -Wno-unused-variable -Wno-unused-function -Wno-write-strings"
+DFLAGS="-DENABLE_ASSERT"
 CPPFLAGS="-D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=2 -DVERSION=\"${VERSION}\""
-#CFLAGS="-g -Wall -Wno-deprecated-declarations -O0 -O2 ${INCS} ${CPPFLAGS}"
-CFLAGS="-g -Wall -Wno-deprecated-declarations ${INCS} ${CPPFLAGS}"
+#CFLAGS="-Wall ${WFLAGS} -O0 -O2 ${INCS} ${CPPFLAGS}"
+CFLAGS="-g -Wall ${WFLAGS} ${INCS} ${CPPFLAGS}"
 LDFLAGS=${LIBS}
 
 # compiler and linker

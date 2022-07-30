@@ -1,4 +1,26 @@
-// NOTE(Elias): Drawing functions
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): Keyboard
+
+inline internal B32 
+input_down(GameButtonState button)
+{
+  return(button.ended_down);
+}
+
+inline internal B32 
+input_down_single(GameButtonState button)
+{
+  return(button.ended_down && !button.was_down);
+}
+
+inline internal B32 
+input_up_single(GameButtonState button)
+{
+  return(!button.ended_down && button.was_down);
+} 
+
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): Drawing Functions
 
 internal void
 render_background(SDL_Surface *surface)
@@ -21,10 +43,10 @@ render_background(SDL_Surface *surface)
 internal void
 draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color)
 {
-  Assert(x > 0);
-  Assert(y > 0);
-  Assert(x + width < surface->w);
-  Assert(y + height < surface->h);
+  Assert(x >= 0);
+  Assert(y >= 0);
+  Assert(x + width <= surface->w);
+  Assert(y + height <= surface->h);
   S32 bytes_per_pixel = surface->format->BytesPerPixel;
   for (S32 row = y;
        row < (y + height);
@@ -40,7 +62,32 @@ draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color)
   }
 }
 
-// NOTE(Elias): Initialising functions
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): Physics Functions 
+
+internal B32 
+collision_1d(S32 l1, S32 r1, S32 l2, S32 r2) {
+  S32 result = (l1 <= l2) ? -ClampBot(0, r1 - l2) : 
+               (l2 <= l1) ? ClampBot(0, r2 - l1) : 0; 
+  return(result);
+}
+
+internal V2S32 
+collision_2d(S32 x1, S32 y1, S32 w1, S32 h1, 
+             S32 x2, S32 y2, S32 w2, S32 h2) {
+  V2S32 result;
+  result.x = collision_1d(x1, x1 + w1, x2, x2 + w2);
+  result.y = collision_1d(y1, y1 + h1, y2, y2 + h2);
+  return(result);
+}
+
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): Level
+
+// NOTE(Elias): No functions yet
+
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): Player 
 
 internal void
 player_initialise(Player *player, S32 window_w, S32 window_h)
@@ -77,44 +124,8 @@ player_initialise(Player *player, S32 window_w, S32 window_h)
   if (!player->sprite)
   {
     printf("Something went wrong loading player sprite.\n");
-  }
-  
+  } 
 }
-
-internal void
-game_initialise(GameState *game_state, SDL_Surface *surface)
-{
-  player_initialise(&game_state->player, surface->w, surface->h);
-  
-  Environment *env = &game_state->env;
-  env->friction_ground = 1.8f;
-  env->friction_sky = 0.25f; 
-  env->gravity_const = 9.81f;
-  
-  Platform *platform = &game_state->platform;
-  platform->x = 210;
-  platform->y = surface->h - 120;
-  platform->w = 120;
-  platform->h = 50; 
-} 
-
-internal B32 
-collision_1d(S32 l1, S32 r1, S32 l2, S32 r2) {
-  S32 result = (l1 <= l2) ? -ClampBot(0, r1 - l2) : 
-               (l2 <= l1) ? ClampBot(0, r2 - l1) : 0; 
-  return(result);
-}
-
-internal S32V2 
-collision_2d(S32 x1, S32 y1, S32 w1, S32 h1, 
-             S32 x2, S32 y2, S32 w2, S32 h2) {
-  S32V2 result;
-  result.x = collision_1d(x1, x1 + w1, x2, x2 + w2);
-  result.y = collision_1d(y1, y1 + h1, y2, y2 + h2);
-  return(result);
-}
-
-// NOTE(Elias): Update functions
 
 internal void 
 player_update(Player *player, Environment *env, Platform *platform,
@@ -138,10 +149,10 @@ player_update(Player *player, Environment *env, Platform *platform,
   S32 new_y = player->y + player->y_velocity;
   
   // NOTE(Elias): collision checking 
-  S32V2 col_old = collision_2d(
+  V2S32 col_old = collision_2d(
       player->x, player->y, player->w, player->h, 
       platform->x, platform->y, platform->w, platform->h); 
-  S32V2 col_new = collision_2d(
+  V2S32 col_new = collision_2d(
       new_x, new_y, player->w, player->h, 
       platform->x, platform->y, platform->w, platform->h); 
   
@@ -178,23 +189,31 @@ player_update(Player *player, Environment *env, Platform *platform,
  
 }
 
-inline internal B32 
-input_down(GameButtonState button)
+internal void
+player_die(Player *player)
 {
-  return(button.ended_down);
+  SDL_FreeSurface(player->sprite);
 }
 
-inline internal B32 
-input_down_single(GameButtonState button)
-{
-  return(button.ended_down && !button.was_down);
-}
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): Game
 
-inline internal B32 
-input_up_single(GameButtonState button)
+internal void
+game_initialise(GameState *game_state, SDL_Surface *surface)
 {
-  return(!button.ended_down && button.was_down);
-}
+  player_initialise(&game_state->player, surface->w, surface->h);
+  
+  Environment *env = &game_state->env;
+  env->friction_ground = 1.8f;
+  env->friction_sky = 0.25f; 
+  env->gravity_const = 9.81f;
+  
+  Platform *platform = &game_state->platform;
+  platform->x = 210;
+  platform->y = surface->h - 120;
+  platform->w = 120;
+  platform->h = 50; 
+} 
 
 internal void
 game_update_and_render(GameState *game_state, GameInput *game_input, 
@@ -301,12 +320,11 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   destR.x = player->x;
   destR.y = player->y;
 
-  SDL_BlitScaled(player->sprite, NULL, surface, &destR);
-
+  SDL_BlitScaled(player->sprite, NULL, surface, &destR); 
 }
 
 internal void
 game_die(GameState *game_state)
 {
-  SDL_FreeSurface(game_state->player.sprite);
+  player_die(&game_state->player);
 } 
