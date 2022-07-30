@@ -1,16 +1,17 @@
+  
+  SDL GAME PROJECT
 
+  1. About
 
-SDL GAME PROJECT
+  cool game
 
-1. About
+  2. Setup build enviroment 
 
-cool game
+  Install the necessary libs:
+  - Install sdl2 lib
+    On debian: `sudo apt install libsdl2-dev`
+  
+  3. Build and Run
 
-2. Setup build enviroment 
-
-Install the necessary libs:
-  1. install sdl2 lib
-  On debian: `sudo apt install libsdl2-dev`
-
-
-
+  Build the project with: ./build.sh
+  Run the game with: ./run.sh
