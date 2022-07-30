@@ -12,12 +12,12 @@
 
   2. IN PROGRESS 
 
-- single keypresses (Elias)
-- support for mulitple platforms (Lupy)
 - abstract physics stuff to vectors (Elias)
 
   3. DONE
 
+- support for mulitple platforms (Lupy)
+- single keypresses (Elias)
 - double jump (Lupy)
 - collision system (Elias)
 - basic player physics (Elias)
