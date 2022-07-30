@@ -43,17 +43,13 @@ render_background(SDL_Surface *surface)
 internal void
 draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color)
 {
-  Assert(x >= 0);
-  Assert(y >= 0);
-  Assert(x + width <= surface->w);
-  Assert(y + height <= surface->h);
   S32 bytes_per_pixel = surface->format->BytesPerPixel;
-  for (S32 row = y;
-       row < (y + height);
+  for (S32 row = ClampBot(0, y);
+       (row < y + height) && (row < surface->h);
        ++row)
   {
-    for (S32 column = x;
-         column < (x + width);
+    for (S32 column = ClampBot(0, x);
+         (column < x + width) && (column < surface->w);
          ++column)
     {
       U8 *p = (U8 *)surface->pixels + (row * surface->pitch) + (column * bytes_per_pixel);
@@ -172,8 +168,9 @@ player_update(Player *player, Environment *env, Platform *platform,
     player->y_velocity = 0;
   } 
   
-  // NOTE(Elias) clamp to screen border
-  player->x = Clamp(0, new_x, screen_width - player->w);
+  player->x = new_x;
+  // NOTE(Elias): clamp to screen border down
+  // TODO(Elias): should be removed when platforms are done
   player->y = ClampTop(new_y, screen_height - player->h);
  
   if (player->y == (screen_height - player->h))
@@ -187,6 +184,39 @@ player_update(Player *player, Environment *env, Platform *platform,
     player->jumpcount = 0; 
   }
  
+  for (S32 i = (S32)ArrayCount(player->tailpos) - 1;
+       i > 0;
+       --i)
+  {
+    player->tailpos[i] = player->tailpos[i-1];
+    player->tailpos[i].y += 5;
+  }
+  player->tailpos[0] = {player->x, player->y};
+}
+
+internal void
+player_render(SDL_Surface *surface, Player *player)
+{
+  // NOTE(Elias): Render tail
+  for (S32 i = (S32)ArrayCount(player->tailpos)-1;
+       i >= 0;
+       --i)
+  {
+    for (S32 j = 0;
+         j < 50;
+         ++j)
+    {
+      draw_box(surface, player->tailpos[i].x + j, player->tailpos[i].y, 1, player->h-i*5,
+          ((255  - ((i * 50 + j) / 5)) << 16) +
+          ((128 + ((i * 50 + j) / 5)) << 8) +
+          ((i * 50 + j) / 3));
+    }
+  } 
+  draw_box(surface, player->x, player->y, player->w, player->h, 0x0);
+  
+  // NOTE(Elias): Render player
+  SDL_Rect dst_rect = {player->x, player->y, player->w, player->h};
+  SDL_BlitScaled(player->sprite, 0, surface, &dst_rect); 
 }
 
 internal void
@@ -210,14 +240,16 @@ game_initialise(GameState *game_state, SDL_Surface *surface)
   
   Platform *platform = &game_state->platform;
   platform->x = 210;
+  // TODO(Elias): Conversion to screen coordinates should happen 
+  // in the render function.
   platform->y = surface->h - 120;
   platform->w = 120;
   platform->h = 50; 
 } 
 
 internal void
-game_update_and_render(GameState *game_state, GameInput *game_input, 
-                       SDL_Surface *surface, S64 counter)
+game_update(GameState *game_state, GameInput *game_input, 
+            SDL_Surface *surface, S64 counter)
 {
   Player *player = &game_state->player;
   Environment *env = &game_state->env;
@@ -279,48 +311,18 @@ game_update_and_render(GameState *game_state, GameInput *game_input,
   }
 #endif
 
-    for (S32 i = (S32)ArrayCount(player->tailpos) - 1;
-         i > 0;
-         --i)
-    {
-      player->tailpos[i] = player->tailpos[i-1];
-      player->tailpos[i].y += 5;
-    }
-    player->tailpos[0] = {player->x, player->y};
-  
+}
 
-  // NOTE(Elias): Render the scene to the buffer
-  
-  render_background(surface);
- 
-  // NOTE(Elias): Render player tail
-  for (S32 i = (S32)ArrayCount(player->tailpos)-1;
-       i >= 0;
-       --i)
-  {
-    for (S32 j = 0;
-         j < 50;
-         ++j)
-    {
-      draw_box(surface, player->tailpos[i].x + j, player->tailpos[i].y, 1, player->h-i*5,
-          ((255  - ((i * 50 + j) / 5)) << 16) +
-          ((128 + ((i * 50 + j) / 5)) << 8) +
-          ((i * 50 + j) / 3));
-    }
-  }
-  
-  S32 player_disp_h = ClampBot(0, (player->y < 0) ? (player->h - (0-player->y)) : player->h); 
-  S32 player_disp_y = ClampBot(0, player->y);
-  draw_box(surface, player->x, player_disp_y, player->w, player_disp_h, 0x0);
+internal void
+game_render(SDL_Surface *surface, GameState *game_state)
+{
+  render_background(surface); 
+
+  Platform *platform = &game_state->platform;
   draw_box(surface, platform->x, platform->y, platform->w, platform->h, 0x555555); 
-
-  SDL_Rect destR;
-  destR.h = player->h;
-  destR.w = player->w;
-  destR.x = player->x;
-  destR.y = player->y;
-
-  SDL_BlitScaled(player->sprite, NULL, surface, &destR); 
+  
+  Player *player = &game_state->player;
+  player_render(surface, player);
 }
 
 internal void
