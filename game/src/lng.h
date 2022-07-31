@@ -41,28 +41,29 @@ struct GameInput
   };
 };
 
-inline internal B32 input_down(GameButtonState button);
-inline internal B32 input_down_single(GameButtonState button);
-inline internal B32 input_up_single(GameButtonState button);
+inline internal B32 key_down(GameButtonState button);
+inline internal B32 key_down_single(GameButtonState button);
+inline internal B32 key_up_single(GameButtonState button);
 
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Drawing 
 
 internal void render_background(SDL_Surface *surface); 
-internal void draw_box(SDL_Surface *surface, S32 x, S32 y, S32 width, S32 height, S32 color);
+internal void draw_box(SDL_Surface *surface, V2F32 pos, F32 w, F32 h, S32 c);
 
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Physics Functions 
-internal B32   collision_1d(S32 l1, S32 r1, S32 l2, S32 r2);
-internal V2S32 collision_2d(S32 x1, S32 y1, S32 w1, S32 h1, S32 x2, S32 y2, S32 w2, S32 h2);
+
+internal F32   collision_1d(V2F32 p1, V2F32 p2);
+internal V2F32 collision_2d(V2F32 p1, F32 w1, F32 h1, V2F32 p2, F32 w2, F32 h2);
 
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Level 
 
 struct Platform
 {
-  S32 x, y;
-  S32 w, h;
+  F32 w, h;
+  V2F32 pos;
 };
 
 struct Environment
@@ -77,16 +78,22 @@ struct Environment
 
 struct Player 
 {
-  S32 w, h;
-  S32 x, y;
-  F32 x_velocity, y_velocity;
-  F32 max_x_velocity, max_y_velocity;
-  S32 s_x, s_y;
+  // NOTE(Elias): Physics
+  F32 w, h;
+  V2F32 pos;
+  V2F32 v;
+  V2F32 v_max;
+  V2F32 p_mov;
   F32 m;
   B32 is_grounded;
-  S32 jumpcount;
-  V2S32 tailpos[10];
+
+  // NOTE(Elias): Abilities 
+  S32 jumps_max;
+  S32 jumps_left;
+  
+  // NOTE(Elias): Graphics 
   SDL_Surface* sprite;
+  V2F32 tailpos[10];
 };
 
 internal void player_initialise(Player *player, S32 window_w, S32 window_h); 
@@ -107,7 +114,6 @@ struct GameState
 
 internal void game_initialise(GameState *game_state, SDL_Surface *surface);
 internal void game_update(GameState *game_state, GameInput *game_input, 
-                          SDL_Surface *surface, S64 counter);
+                          SDL_Surface *surface, U64 counter);
 internal void game_render(SDL_Surface *surface, GameState *game_state);
 internal void game_die(GameState *game_state); 
-
