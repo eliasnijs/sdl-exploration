@@ -1,6 +1,7 @@
 
   1. TODO
   
+- build system for windows and mac
 - coordinate system
   - world coordinate system
   - world coordinate to screen coordinate
