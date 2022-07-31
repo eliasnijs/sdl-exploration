@@ -261,7 +261,7 @@ internal F32 unlerp(F32 a, F32 x, F32 b);
 
 internal V2S32 v2s32(S32 x, S32 y);
 
-internal V2F32 v2s32(F32 x, F32 y);
+internal V2F32 v2f32(F32 x, F32 y);
 internal V3F32 v3f32(F32 x, F32 y, F32 z);
 internal V4F32 v4f32(F32 x, F32 y, F32 z, F32 w);
 

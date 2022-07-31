@@ -242,7 +242,7 @@ v2s32(S32 x, S32 y)
 }
 
 internal V2F32 
-v2s32(F32 x, F32 y)
+v2f32(F32 x, F32 y)
 {
   V2F32 r = {x, y};
   return(r);
