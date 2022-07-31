@@ -10,15 +10,15 @@
 - camera system
 - sdl soundssytem
 - gamedesign
-- fontrendering
 - scenemanager
 
   2. IN PROGRESS 
 
-- abstract physics stuff to vectors (Elias)
+- fontrendering
 
   3. DONE
 
+- abstract physics stuff to vectors (Elias)
 - extend baselayer with vectors and intervals (Elias)
 - support for mulitple platforms (Lupy)
 - single keypresses (Elias)
