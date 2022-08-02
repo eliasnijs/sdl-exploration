@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Keyboard
 
@@ -236,6 +237,8 @@ game_initialise(GameState *game_state, SDL_Surface *surface)
   platform->pos = v2f32(210.0f, surface->h - 120.0f);
   platform->w = 120;
   platform->h = 50; 
+
+  fnt_pxlfnt_load("resources/medieval.pxlfnt", &game_state->ui.font);
 } 
 
 internal void
@@ -316,6 +319,11 @@ game_render(SDL_Surface *surface, GameState *game_state)
   
   Player *player = &game_state->player;
   player_render(surface, player);
+
+  fnt_render(surface, &game_state->ui.font, "AA A AA",
+             v2s32(surface->w/2, surface->h/2), 7, 0x0, 8, 8,
+             Font_Align_Center_H, Font_Align_Center_V);
+
 }
 
 internal void

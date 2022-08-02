@@ -1,6 +1,7 @@
 
   1. TODO
-  
+
+- collider system
 - coordinate system
   - world coordinate system
   - world coordinate to screen coordinate
@@ -11,13 +12,18 @@
 - sdl soundssytem
 - gamedesign
 - scenemanager
+- texture file format
+- texture maker tool
+- level file format
+- level design tool
 
   2. IN PROGRESS 
 
-- fontrendering
 
   3. DONE
 
+- fontrendering (Elias)
+- pixel font maker (Elias)
 - abstract physics stuff to vectors (Elias)
 - extend baselayer with vectors and intervals (Elias)
 - support for mulitple platforms (Lupy)
@@ -29,6 +35,5 @@
 - basic keyboard processing (Elias)
 - sdl instance (Elias)
 - basic platform (Elias)
-- basic sprite rendering (Lupy)
-
+- basic sprite rendering (Lupy) 
 

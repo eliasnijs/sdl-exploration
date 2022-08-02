@@ -105,11 +105,20 @@ internal void player_die(Player *player);
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Game 
 
+// IMPORTANT(Elias): 
+// Must be initialised to zero when assigning memory!
 struct GameState
 {
-  Environment env;
   Player player; 
+  
+  Environment env;
   Platform platform;
+  
+  struct 
+  {
+    Font font;
+  } ui;
+
 };
 
 internal void game_initialise(GameState *game_state, SDL_Surface *surface);
@@ -117,3 +126,7 @@ internal void game_update(GameState *game_state, GameInput *game_input,
                           SDL_Surface *surface, U64 counter);
 internal void game_render(SDL_Surface *surface, GameState *game_state);
 internal void game_die(GameState *game_state); 
+
+
+
+
