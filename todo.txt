@@ -2,6 +2,7 @@
   1. TODO
 
 - collider system
+- build system for windows and mac
 - coordinate system
   - world coordinate system
   - world coordinate to screen coordinate
@@ -36,4 +37,3 @@
 - sdl instance (Elias)
 - basic platform (Elias)
 - basic sprite rendering (Lupy) 
-
