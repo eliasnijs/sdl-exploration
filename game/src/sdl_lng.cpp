@@ -1,17 +1,4 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
-#include <stdio.h>
-#include <stdint.h>
-
-#include "baselayer.h"
-#include "baselayer.cpp"
-#include "config.h"
-
-#include "lng.h"
-#include "lng.cpp"
-#include "sdl_lng.h"
-
+#include "includes.h"
 
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Global Variables
@@ -135,43 +122,48 @@ main()
     // NOTE(Elias): Initialisation
     S32 start_tick; 
     S64 counter = 0;
-    // NOTE(Elias): Is there another way to allocate memory instead of malloc?
-    GameState *game_state = (GameState *)malloc(sizeof(GameState));
+    // NOTE(Elias): Is there another way to allocate memory instead of calloc?
     GameInput game_input = {}; 
-    
-    game_initialise(game_state, sdl_context.surface);
-    
-    // NOTE(Elias): Game loop
-    while (global_running)
-    { 
+    GameState *game_state = (GameState *)calloc(1, sizeof(GameState));
+    if (game_state)
+    {
+      game_initialise(game_state, sdl_context.surface);
       
-      start_tick = SDL_GetTicks(); 
-      
-      SDL_process_pending_messages(&game_input); 
-      SDL_process_keyboard(&game_input);
+      // NOTE(Elias): Game loop
+      while (global_running)
+      { 
+        
+        start_tick = SDL_GetTicks(); 
+        
+        SDL_process_pending_messages(&game_input); 
+        SDL_process_keyboard(&game_input);
 
-      // NOTE(Elias): Temporary pauze button
-      if (game_input.action8.ended_down)
-      {
-        continue;  
+        // NOTE(Elias): Temporary pauze button
+        if (game_input.action8.ended_down)
+        {
+          continue;  
+        }
+
+        game_update(game_state, &game_input, sdl_context.surface, counter); 
+        game_render(sdl_context.surface, game_state);
+        
+        SDL_UpdateWindowSurface(sdl_context.window); 
+        ++counter;
+        
+        // NOTE(Elias): cap framerate
+        if ((1000.0 / FPS) > (SDL_GetTicks() - start_tick)) 
+        {
+          SDL_Delay((1000.0 / FPS) - (F64)(SDL_GetTicks() - start_tick));
+        }
       }
 
-      game_update(game_state, &game_input, sdl_context.surface, counter); 
-      game_render(sdl_context.surface, game_state);
-      
-      SDL_UpdateWindowSurface(sdl_context.window); 
-      ++counter;
-      
-      // NOTE(Elias): cap framerate
-      if ((1000.0 / FPS) > (SDL_GetTicks() - start_tick)) 
-      {
-        SDL_Delay((1000.0 / FPS) - (F64)(SDL_GetTicks() - start_tick));
-      }
+      game_die(game_state);
+      free(game_state);
     }
-
-    game_die(game_state);
-    free(game_state);
-
+    else
+    {
+      // TODO(Elias): logging
+    }
   }
   else 
   {
