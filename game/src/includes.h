@@ -11,8 +11,8 @@
 
 #include "config.h"
 
-#include "ui/font.h"
-#include "ui/font.cpp"
+#include "ui.h"
+#include "ui.cpp"
 
 #include "lng.h"
 #include "lng.cpp"
