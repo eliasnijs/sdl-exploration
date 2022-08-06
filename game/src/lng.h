@@ -49,7 +49,7 @@ inline internal B32 key_up_single(GameButtonState button);
 //// NOTE(Elias): Drawing 
 
 internal void render_background(SDL_Surface *surface); 
-internal void draw_box(SDL_Surface *surface, V2F32 pos, F32 w, F32 h, S32 c);
+internal void draw_box(SDL_Surface *surface, V2F32 cam_pos, V2F32 pos, F32 w, F32 h, S32 c);
 
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Physics Functions 
@@ -99,7 +99,7 @@ struct Player
 internal void player_initialise(Player *player, S32 window_w, S32 window_h); 
 internal void player_update(Player *player, Environment *env, Platform *platform, 
                             S32 screen_width, S32 screen_height);
-internal void player_render(SDL_Surface *surface, Player *player);
+internal void player_render(SDL_Surface *surface, V2F32 camera, Player *player);
 internal void player_die(Player *player);
 
 ///////////////////////////////////////////////////////////
@@ -109,15 +109,14 @@ internal void player_die(Player *player);
 // Must be initialised to zero when assigning memory!
 struct GameState
 {
+  V2F32 camera;
+
   Player player; 
   
   Environment env;
   Platform platform;
   
-  struct 
-  {
-    Font font;
-  } ui;
+  Font font;
 
 };
 

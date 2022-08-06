@@ -1,3 +1,6 @@
+///////////////////////////////////////////////////////////
+//// NOTE(Elias): Camera
+
 
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Keyboard
@@ -36,21 +39,21 @@ render_background(SDL_Surface *surface)
          ++column)
     {
       U8 *p = (U8 *)surface->pixels + (row * surface->pitch) + (column * bytes_per_pixel);
-      *(U32 *)p = 0xDDDDDD;
+      *(U32 *)p = 0x0;
     }
   }
 }
 
 internal void 
-draw_box(SDL_Surface *surface, V2F32 pos, F32 w, F32 h, S32 c)
+draw_box(SDL_Surface *surface, V2F32 camera, V2F32 pos, F32 w, F32 h, S32 c)
 {
   S32 bytes_per_pixel = surface->format->BytesPerPixel;
-  for (S32 row = ClampBot(0, pos.y);
-       (row < pos.y + h) && (row < surface->h);
+  for (S32 row = ClampBot(0, pos.y - camera.y);
+       (row < pos.y - camera.y + h) && (row < surface->h);
        ++row)
   {
-    for (S32 column = ClampBot(0, pos.x);
-         (column < pos.x + w) && (column < surface->w);
+    for (S32 column = ClampBot(0, pos.x - camera.x);
+         (column < pos.x - camera.x + w) && (column < surface->w);
          ++column)
     {
       U8 *p = (U8 *)surface->pixels + (row * surface->pitch) + (column * bytes_per_pixel);
@@ -114,7 +117,7 @@ player_initialise(Player *player, S32 window_w, S32 window_h)
   player->sprite = SDL_LoadBMP("resources/images/player256x.bmp");
   if (!player->sprite)
   {
-    printf("Something went wrong loading player sprite.\n");
+    LogErrString("Something went wrong loading player sprite.\n");
   } 
 }
 
@@ -189,7 +192,7 @@ player_update(Player *player, Environment *env, Platform *platform,
 }
 
 internal void
-player_render(SDL_Surface *surface, Player *player)
+player_render(SDL_Surface *surface, V2F32 camera, Player *player)
 {
   // NOTE(Elias): Render tail
   for (S32 i = (S32)ArrayCount(player->tailpos)-1;
@@ -200,17 +203,21 @@ player_render(SDL_Surface *surface, Player *player)
          j < 50;
          ++j)
     {
-      draw_box(surface, player->tailpos[i] + v2f32((F32)j, 0.0f), 1, player->h - i*5,
-          ((255  - ((i * 50 + j) / 5)) << 16) +
-          ((128 + ((i * 50 + j) / 5)) << 8) +
-          ((i * 50 + j) / 3));
+      // b_h = p_h - i*5 + j
+      draw_box(surface, camera, player->tailpos[i] + v2f32((F32)j, 0.0f), 
+               1, player->h - i*5,
+               ((0 + ((10-i) * 50 + j) / 2)     << 16)
+               +
+               ((128 + (((10-i) * 50 + j) / 4))  << 0) 
+               );
     }
   } 
-  draw_box(surface, player->pos, player->w, player->h, 0x0);
   
   // NOTE(Elias): Render player
-  SDL_Rect dst_rect = {(S32)player->pos.x, (S32)player->pos.y, (S32)player->w, (S32)player->h};
-  SDL_BlitScaled(player->sprite, 0, surface, &dst_rect); 
+  draw_box(surface, camera, player->pos, player->w, player->h, 0xffffff);
+  
+  // SDL_Rect dst_rect = {(S32)player->pos.x, (S32)player->pos.y, (S32)player->w, (S32)player->h};
+  // SDL_BlitScaled(player->sprite, 0, surface, &dst_rect); 
 }
 
 internal void
@@ -231,19 +238,18 @@ game_initialise(GameState *game_state, SDL_Surface *surface)
   env->friction_ground = 1.8f;
   env->friction_sky = 0.25f; 
   env->gravity_const = 9.81f;
-  
-  Platform *platform = &game_state->platform;
-  // TODO(Elias): Conversion to screen coordinates should happen 
-  platform->pos = v2f32(210.0f, surface->h - 120.0f);
-  platform->w = 120;
-  platform->h = 50; 
 
-  fnt_pxlfnt_load("resources/medieval.pxlfnt", &game_state->ui.font);
+  Platform *platform = &game_state->platform;
+  platform->w = 200.0f;
+  platform->h = 30.0f;
+  platform->pos = v2f32(surface->w / 2 - 50.0f, surface->h - 100.0f);
+  
+  pxlfnt_load("resources/medieval.pxlfnt", &game_state->font);
 } 
 
 internal void
 game_update(GameState *game_state, GameInput *game_input, 
-            SDL_Surface *surface, S64 counter)
+            SDL_Surface *surface, U64 counter)
 {
   Player *player = &game_state->player;
   Environment *env = &game_state->env;
@@ -289,8 +295,8 @@ game_update(GameState *game_state, GameInput *game_input,
   }
 
   // NOTE(Elias): Update state of the game
-  player_update(player, env, platform, surface->w, surface->h);
-
+  player_update(player, env, platform, surface->w, surface->h); 
+  game_state->camera = v2f32(player->pos.x + player->w/2 - SCREEN_WIDTH / 2, 0.0);
 
   // NOTE(Elias): Log some stuff
 #if 0
@@ -313,17 +319,16 @@ internal void
 game_render(SDL_Surface *surface, GameState *game_state)
 {
   render_background(surface); 
-
-  Platform *platform = &game_state->platform;
-  draw_box(surface, platform->pos, platform->w, platform->h, 0x555555); 
-  
-  Player *player = &game_state->player;
-  player_render(surface, player);
-
-  fnt_render(surface, &game_state->ui.font, "AA A AA",
-             v2s32(surface->w/2, surface->h/2), 7, 0x0, 8, 8,
+  pxlfnt_render(surface, &game_state->font, "TEST",
+             v2s32(surface->w/2, surface->h/2 - 10), 5, 0xFFFFFF, 0, 5,
              Font_Align_Center_H, Font_Align_Center_V);
 
+  Platform *platform = &game_state->platform;
+  draw_box(surface, game_state->camera, 
+           platform->pos, platform->w, platform->h, 
+           0xffffff); 
+  
+  player_render(surface, game_state->camera, &game_state->player); 
 }
 
 internal void

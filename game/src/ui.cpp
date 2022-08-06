@@ -2,32 +2,29 @@
 //// NOTE(Elias): Font
 
 internal void
-fnt_pxlfnt_load(char *path, Font *font)
+pxlfnt_load(char *path, Font *font)
 {
-  FILE *file = fopen(path, "rb");
-  if (file) 
-  {
-    S32 file_length = filelen(file);
-    if (file_length == 4096)
-    {
-      fread((U8 *)font->letters[0], 1, file_length, file);
-    }
-    else
-    {
-      // TODO(Elias): logging
-      printf("faile to load font, file is corrupted!");
-    }
-    fclose(file); 
+  FILE *file;
+  S32 file_length; 
+  file = fopen(path, "rb");
+  if (!file) {
+    LogErrString("failed to open file for reading!\n");
+    goto err1;
   } 
-  else 
-  {
-    // TODO(Elias): logging
-    printf("failed to open file for reading!\n");
-  }
+  file_length = filelen(file);
+  if (file_length != 4096) {
+    LogErrString("faile to load font, file is corrupted!");
+    goto err2;
+  } 
+  fread((U8 *)font->letters[0], 1, file_length, file); 
+err2:
+  fclose(file); 
+err1:
+  return;
 }
 
 internal void
-fnt_render_letter(SDL_Surface *surface, Font *font, U8 letter_id, V2S32 pos, S32 s, S32 c)
+pxlfnt_render_letter(SDL_Surface *surface, Font *font, U8 letter_id, V2S32 pos, S32 s, S32 c)
 {
   S32 i_d, j_d, i_letter, 
       i_letter_i, i_letter_j,
@@ -64,9 +61,9 @@ fnt_render_letter(SDL_Surface *surface, Font *font, U8 letter_id, V2S32 pos, S32
 } 
 
 internal void
-fnt_render(SDL_Surface *surface, Font *font, char *txt,
-           V2S32 pos, S32 s, U32 c, S32 krn, S32 ld,
-           Font_Align_H a_h, Font_Align_V a_v)
+pxlfnt_render(SDL_Surface *surface, Font *font, char *txt,
+              V2S32 pos, S32 s, U32 c, S32 krn, S32 ld,
+              Font_Align_H a_h, Font_Align_V a_v)
 {
   S32 i, l, l_c, nl_cnt, w, h;
   V2S32 pos_c, offset = {};
@@ -87,7 +84,7 @@ fnt_render(SDL_Surface *surface, Font *font, char *txt,
 
   // NOTE(Elias): Set Kerning and leading to more correct values
   // TODO(Elias): Seek a better way to define this offset.
-  krn += -32; 
+  krn += -2 * s; 
   ld += -32;
 
   // NOTE(Elias): Calculate Horizontal Alignment
@@ -131,7 +128,7 @@ fnt_render(SDL_Surface *surface, Font *font, char *txt,
   i = 0;
   while (txt[i] != '\0')
   {
-    fnt_render_letter(surface, font, txt[i], pos_c, s, c);
+    pxlfnt_render_letter(surface, font, txt[i], pos_c, s, c);
     pos_c = pos_c + v2s32(krn + 16*s, 0);
     ++i;
   }

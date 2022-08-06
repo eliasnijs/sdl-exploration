@@ -18,9 +18,9 @@ struct Font
   U8 letters[128][32];
 };
 
-internal void fnt_render_letter(SDL_Surface *surface, Font *font, 
-                                U8 letter_id, V2S32 pos, S32 s, S32 c);
-internal void fnt_pxlfnt_load(char *path, Font *font);
-internal void fnt_render(SDL_Surface *surface, Font *font, char *txt, 
-                         V2S32 pos, S32 s, U32 c, S32 krn, S32 ld, 
-                         Font_Align_H a_h, Font_Align_V a_v);
+internal void pxlfnt_load(char *path, Font *font);
+internal void pxlfnt_render_letter(SDL_Surface *surface, Font *font, 
+                                   U8 letter_id, V2S32 pos, S32 s, S32 c);
+internal void pxlfnt_render(SDL_Surface *surface, Font *font, char *txt, 
+                            V2S32 pos, S32 s, U32 c, S32 krn, S32 ld, 
+                            Font_Align_H a_h, Font_Align_V a_v);

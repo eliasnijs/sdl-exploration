@@ -29,41 +29,36 @@ SDL_process_keyboard(GameInput *game_input)
                              state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT]); 
   SDL_process_keyboard_input(&game_input->action1, 
                              state[SDL_SCANCODE_SPACE]); 
-  SDL_process_keyboard_input(&game_input->action8, 
-                             state[SDL_SCANCODE_ESCAPE]); 
 } 
 
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): SDL Basics
 
-internal B32 
+internal S32 
 SDL_initialise(SDL_Context *sdl_context)
 {
-  B32 success = true;
-  if (SDL_Init(SDL_INIT_VIDEO) >= 0)
-  {
-    sdl_context->window = SDL_CreateWindow("Lupy Niceguy Game", 
-                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
-                                           SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (sdl_context->window)
-    {
-      sdl_context->surface = SDL_GetWindowSurface(sdl_context->window);
-      SDL_FillRect(sdl_context->surface, 0, 
-                   SDL_MapRGB(sdl_context->surface->format, 0x00 , 0x00 , 0x00 ));
-      SDL_UpdateWindowSurface(sdl_context->window);
-    }
-    else
-    {
-      // TODO (Elias): logging
-      success = false;
-    }
+  B32 err_code = 0;
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    LogErrString("failed to initliase SDL!");
+    err_code = 1;
+    goto err1;
   }
-  else
-  {
-    // TODO (Elias): logging
-    success = false;
+  sdl_context->window = SDL_CreateWindow("Lupy Niceguy Game", 
+                                         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+                                         SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+  if (!sdl_context->window) {
+    LogErrString("failed to initliase SDL Window!");
+    SDL_Quit();
+    err_code = 2;
+    goto err2;
   }
-  return(success);
+  sdl_context->surface = SDL_GetWindowSurface(sdl_context->window);
+  SDL_FillRect(sdl_context->surface, 0, 
+               SDL_MapRGB(sdl_context->surface->format, 0x00 , 0x00 , 0x00 ));
+  SDL_UpdateWindowSurface(sdl_context->window);
+err2:
+err1:
+  return(err_code);
 }
 
 internal void 
@@ -115,64 +110,56 @@ SDL_process_pending_messages(GameInput *game_input)
 S32 
 main()
 {
-  B32 success = true;
+  S32 err_code = 0;
   SDL_Context sdl_context = {}; 
-  if (SDL_initialise(&sdl_context))
-  {
-    // NOTE(Elias): Initialisation
-    S32 start_tick; 
-    S64 counter = 0;
-    // NOTE(Elias): Is there another way to allocate memory instead of calloc?
-    GameInput game_input = {}; 
-    GameState *game_state = (GameState *)calloc(1, sizeof(GameState));
-    if (game_state)
-    {
-      game_initialise(game_state, sdl_context.surface);
-      
-      // NOTE(Elias): Game loop
-      while (global_running)
-      { 
-        
-        start_tick = SDL_GetTicks(); 
-        
-        SDL_process_pending_messages(&game_input); 
-        SDL_process_keyboard(&game_input);
+ 
+  S32 start_tick;
+  U64 counter; 
+  GameInput game_input = {}; 
+  GameState *game_state;
 
-        // NOTE(Elias): Temporary pauze button
-        if (game_input.action8.ended_down)
-        {
-          continue;  
-        }
+  if (SDL_initialise(&sdl_context) != 0) {
+    LogErrString("failed to initliase SDL");
+    err_code = 1;
+    goto err1;
+  }
 
-        game_update(game_state, &game_input, sdl_context.surface, counter); 
-        game_render(sdl_context.surface, game_state);
-        
-        SDL_UpdateWindowSurface(sdl_context.window); 
-        ++counter;
-        
-        // NOTE(Elias): cap framerate
-        if ((1000.0 / FPS) > (SDL_GetTicks() - start_tick)) 
-        {
-          SDL_Delay((1000.0 / FPS) - (F64)(SDL_GetTicks() - start_tick));
-        }
-      }
+  game_state = (GameState *)calloc(1, sizeof(GameState));
+  if (!game_state) {
+    LogErrString("failed to allocate memory for the game state!");
+    err_code = 2;
+    goto err2; 
+  }
 
-      game_die(game_state);
-      free(game_state);
-    }
-    else
-    {
-      // TODO(Elias): logging
+  game_initialise(game_state, sdl_context.surface);
+    
+  // NOTE(Elias): Game loop
+  while (global_running)
+  { 
+    start_tick = SDL_GetTicks(); 
+    
+    SDL_process_pending_messages(&game_input); 
+    SDL_process_keyboard(&game_input); 
+    
+    game_update(game_state, &game_input, sdl_context.surface, counter); 
+    game_render(sdl_context.surface, game_state); 
+    SDL_UpdateWindowSurface(sdl_context.window); 
+    
+    ++counter; 
+    
+    // NOTE(Elias): cap framerate
+    if ((1000.0 / FPS) > (SDL_GetTicks() - start_tick)) {
+      SDL_Delay((1000.0 / FPS) - (F64)(SDL_GetTicks() - start_tick));
     }
   }
-  else 
-  {
-    printf("failed to initliase SDL\n");
-    success = false;
-  }
+
+  game_die(game_state);
+  free(game_state);
+
+err2:
   SDL_die(&sdl_context);
-  
-  return(!success);
+err1:
+  return(err_code);
 }
 
 

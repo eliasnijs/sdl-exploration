@@ -14,7 +14,7 @@ LIBS="-lSDL2main -lSDL2"
 
 # flags
 WFLAGS="-Wno-deprecated-declarations -Wno-unused-variable -Wno-unused-function -Wno-write-strings"
-DFLAGS="-DENABLE_ASSERT"
+DFLAGS="-DENABLE_ASSERT -DENABLE_DBGMSG"
 CPPFLAGS="-D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=2 -DVERSION=\"${VERSION}\""
 #CFLAGS="-Wall ${WFLAGS} -O0 -O2 ${INCS} ${CPPFLAGS}"
 CFLAGS="-g -Wall ${WFLAGS} ${INCS} ${CPPFLAGS}"

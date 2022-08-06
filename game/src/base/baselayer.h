@@ -25,6 +25,14 @@
 #define Abs(a)          (((a)<0)?(-(a)):(a))
 #define EvalPrint(x)    (printf("%s = %d\n", #x, (int)(x)))
 
+#if ENABLE_DBGMSG
+#define LogErrString(s) (printf("%s, %d, %s:   %s\n",\
+                         __FILE__, __LINE__, __PRETTY_FUNCTION__, s))
+#else
+#define LogErrString(s)
+#endif
+
+
 #define internal static 
 #define local_persist static
 #define global_variable static 

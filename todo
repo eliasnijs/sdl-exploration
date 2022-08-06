@@ -1,15 +1,12 @@
 
   1. TODO
 
+- [BUG] letter rendering sometimes fails to render top n pixels
 - collider system
 - build system for windows and mac
-- coordinate system
-  - world coordinate system
-  - world coordinate to screen coordinate
 - loading sprites into memory
 - rendering sprites to surface buffer
 - implement opengl
-- camera system
 - sdl soundssytem
 - gamedesign
 - scenemanager
@@ -17,12 +14,17 @@
 - texture maker tool
 - level file format
 - level design tool
+- make time (and speed, ...) independent from framerate
 
   2. IN PROGRESS 
 
+- coordinate system (Elias)
+  - world coordinate system
+  - world coordinate to screen coordinate
 
   3. DONE
 
+- basic camera system (Elias)
 - fontrendering (Elias)
 - pixel font maker (Elias)
 - abstract physics stuff to vectors (Elias)
@@ -37,3 +39,4 @@
 - sdl instance (Elias)
 - basic platform (Elias)
 - basic sprite rendering (Lupy) 
+
