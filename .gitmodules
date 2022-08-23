@@ -1,0 +1,6 @@
+[submodule "pxlfnt-maker"]
+	path = pxlfnt-maker
+	url = git@git.sr.ht:~eliasnijs/pxlfnt-maker
+[submodule "tools/pxlfnt-maker"]
+	path = tools/pxlfnt-maker
+	url = git@git.sr.ht:~eliasnijs/pxlfnt-maker

@@ -313,8 +313,8 @@ game_update(GameState *game_state, GameInput *game_input,
            env->gravity_const);
   }
 #endif
-
 }
+
 internal void
 game_render(SDL_Surface *surface, GameState *game_state)
 {
