@@ -5,6 +5,7 @@
 ///////////////////////////////////////////////////////////
 //// NOTE(Elias): Keyboard
 
+
 inline internal B32 
 key_down(GameButtonState button)
 {
@@ -208,7 +209,7 @@ player_render(SDL_Surface *surface, V2F32 camera, Player *player)
                1, player->h - i*5,
                ((0 + ((10-i) * 50 + j) / 2)     << 16)
                +
-               ((128 + (((10-i) * 50 + j) / 4))  << 0) 
+               ((128 + (((10-i) * 50 + j) / 4))  << 8) 
                );
     }
   } 
@@ -240,9 +241,9 @@ game_initialise(GameState *game_state, SDL_Surface *surface)
   env->gravity_const = 9.81f;
 
   Platform *platform = &game_state->platform;
-  platform->w = 200.0f;
+  platform->w = 5000.0f;
   platform->h = 30.0f;
-  platform->pos = v2f32(surface->w / 2 - 50.0f, surface->h - 100.0f);
+  platform->pos = v2f32(surface->w / 2 - 50.0f, surface->h - 120.0f);
   
   pxlfnt_load("resources/medieval.pxlfnt", &game_state->font);
 } 
@@ -314,7 +315,6 @@ game_update(GameState *game_state, GameInput *game_input,
 #endif
 
 }
-
 internal void
 game_render(SDL_Surface *surface, GameState *game_state)
 {

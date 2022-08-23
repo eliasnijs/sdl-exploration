@@ -60,6 +60,7 @@ pxlfnt_render_letter(SDL_Surface *surface, Font *font, U8 letter_id, V2S32 pos, 
   } 
 } 
 
+// TODO(Elias): BUG: Rendering fails at some scales
 internal void
 pxlfnt_render(SDL_Surface *surface, Font *font, char *txt,
               V2S32 pos, S32 s, U32 c, S32 krn, S32 ld,

@@ -140,9 +140,12 @@ main()
     
     SDL_process_pending_messages(&game_input); 
     SDL_process_keyboard(&game_input); 
-    
+   
+    // NOTE(Elias): Could be that we need to intertwine these
+    // two into a function game_update_and_render(...);
     game_update(game_state, &game_input, sdl_context.surface, counter); 
     game_render(sdl_context.surface, game_state); 
+    
     SDL_UpdateWindowSurface(sdl_context.window); 
     
     ++counter; 

@@ -1,5 +1,3 @@
-// include <stdint.h>, <math.h>
-
 #ifndef BASE_LAYER_H
 
 ///////////////////////////////////////////////////////////
@@ -30,8 +28,7 @@
                          __FILE__, __LINE__, __PRETTY_FUNCTION__, s))
 #else
 #define LogErrString(s)
-#endif
-
+#endif 
 
 #define internal static 
 #define local_persist static
