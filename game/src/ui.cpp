@@ -5,20 +5,20 @@ internal void
 pxlfnt_load(char *path, Font *font)
 {
   FILE *file;
-  S32 file_length; 
+  S32 file_length;
   file = fopen(path, "rb");
   if (!file) {
-    LogErrString("failed to open file for reading!\n");
+    LogErrStr("failed to open file for reading!\n");
     goto err1;
-  } 
+  }
   file_length = filelen(file);
   if (file_length != 4096) {
-    LogErrString("faile to load font, file is corrupted!");
+    LogErrStr("faile to load font, file is corrupted!");
     goto err2;
-  } 
-  fread((U8 *)font->letters[0], 1, file_length, file); 
+  }
+  fread((U8 *)font->letters[0], 1, file_length, file);
 err2:
-  fclose(file); 
+  fclose(file);
 err1:
   return;
 }
@@ -26,12 +26,12 @@ err1:
 internal void
 pxlfnt_render_letter(SDL_Surface *surface, Font *font, U8 letter_id, V2S32 pos, S32 s, S32 c)
 {
-  S32 i_d, j_d, i_letter, 
+  S32 i_d, j_d, i_letter,
       i_letter_i, i_letter_j,
       i_byte, i_bit;
   B32 active;
-  U8 *pxl_d, *letter; 
- 
+  U8 *pxl_d, *letter;
+
   letter = font->letters[letter_id];
   i_d = pos.y, i_letter_i = 0;
   while (i_d < pos.y + 16 * s && i_d < surface->h)
@@ -41,24 +41,24 @@ pxlfnt_render_letter(SDL_Surface *surface, Font *font, U8 letter_id, V2S32 pos, 
     {
       i_letter = i_letter_i*16 + i_letter_j;
       i_byte = i_letter / 8;
-      i_bit  = i_letter - (i_byte * 8); 
+      i_bit  = i_letter - (i_byte * 8);
       active = letter[i_byte] & (1 << i_bit);
       if (active && i_d > 0 && j_d > 0)
       {
-        pxl_d = (U8 *)surface->pixels + 
-                (i_d*surface->pitch) + 
+        pxl_d = (U8 *)surface->pixels +
+                (i_d*surface->pitch) +
                 (j_d*surface->format->BytesPerPixel);
         *(U32 *)pxl_d = c;
-      } 
-      ++j_d; 
+      }
+      ++j_d;
       if (j_d % s == 0)
         ++i_letter_j;
     }
     ++i_d;
     if (i_d % s == 0)
       ++i_letter_i;
-  } 
-} 
+  }
+}
 
 // TODO(Elias): BUG: Rendering fails at some scales
 internal void
@@ -69,7 +69,7 @@ pxlfnt_render(SDL_Surface *surface, Font *font, char *txt,
   S32 i, l, l_c, nl_cnt, w, h;
   V2S32 pos_c, offset = {};
 
-  // NOTE(Elias): Determine the 
+  // NOTE(Elias): Determine the
   // length of the text and the amount of lines
   i = 0; l = 0; nl_cnt = 0; l_c = 0;
   while(txt[i] != '\0')
@@ -85,46 +85,46 @@ pxlfnt_render(SDL_Surface *surface, Font *font, char *txt,
 
   // NOTE(Elias): Set Kerning and leading to more correct values
   // TODO(Elias): Seek a better way to define this offset.
-  krn += -2 * s; 
+  krn += -2 * s;
   ld += -32;
 
   // NOTE(Elias): Calculate Horizontal Alignment
   w = l*16*s + (l-1)*krn;
   switch (a_h)
   {
-    case(Font_Align_Left): 
+    case(Font_Align_Left):
     {
-      offset.x = 0; 
+      offset.x = 0;
     } break;
-    case(Font_Align_Center_H): 
+    case(Font_Align_Center_H):
     {
-      offset.x = -w/2; 
+      offset.x = -w/2;
     } break;
     case(Font_Align_Right):
     {
-      offset.x = -w; 
+      offset.x = -w;
     } break;
   }
-  
+
   // NOTE(Elias): Calculate Vertical Alignment
-  h = nl_cnt*(16*s); 
+  h = nl_cnt*(16*s);
   switch (a_v)
   {
-    case(Font_Align_Top): 
+    case(Font_Align_Top):
     {
-      offset.y = 0; 
+      offset.y = 0;
     } break;
-    case(Font_Align_Center_V): 
+    case(Font_Align_Center_V):
     {
-      offset.y = -(s*5 - h/2); 
+      offset.y = -(s*5 - h/2);
     } break;
     case(Font_Align_Bottom):
     {
-      offset.y = -(s*16 - h); 
+      offset.y = -(s*16 - h);
     } break;
-  } 
+  }
 
-  // NOTE(Elias): Draw Text 
+  // NOTE(Elias): Draw Text
   pos_c = pos + offset;
   i = 0;
   while (txt[i] != '\0')

@@ -1,4 +1,25 @@
 ///////////////////////////////////////////////////////////
+//// NOTE(Elias): Texture Atlas 
+
+struct Texture 
+{
+  S32 w, h, mv;
+  char *pixels;
+};
+
+union TextureAtlas
+{
+  Texture texs[1];
+  struct {
+    Texture wall;
+  };
+};
+
+internal S32 load_texture(char *path, Texture *tex);
+internal S32 textures_init(char **paths, TextureAtlas *textures);
+internal void textures_die(TextureAtlas *textures);
+
+///////////////////////////////////////////////////////////
 //// NOTE(Elias): Keyboard
 
 struct GameButtonState 
@@ -64,6 +85,7 @@ struct Platform
 {
   F32 w, h;
   V2F32 pos;
+  Texture *texture;
 };
 
 struct Environment
@@ -92,7 +114,6 @@ struct Player
   S32 jumps_left;
   
   // NOTE(Elias): Graphics 
-  SDL_Surface* sprite;
   V2F32 tailpos[10];
 };
 
@@ -107,6 +128,7 @@ internal void player_die(Player *player);
 
 // IMPORTANT(Elias): 
 // Must be initialised to zero when assigning memory!
+
 struct GameState
 {
   V2F32 camera;
@@ -115,9 +137,10 @@ struct GameState
   
   Environment env;
   Platform platform;
-  
-  Font font;
 
+  TextureAtlas textures;
+
+  Font font;
 };
 
 internal void game_initialise(GameState *game_state, SDL_Surface *surface);

@@ -39,7 +39,7 @@ SDL_initialise(SDL_Context *sdl_context)
 {
   B32 err_code = 0;
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    LogErrString("failed to initliase SDL!");
+    LogErrStr("failed to initliase SDL!");
     err_code = 1;
     goto err1;
   }
@@ -47,7 +47,7 @@ SDL_initialise(SDL_Context *sdl_context)
                                          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
                                          SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
   if (!sdl_context->window) {
-    LogErrString("failed to initliase SDL Window!");
+    LogErrStr("failed to initliase SDL Window!");
     SDL_Quit();
     err_code = 2;
     goto err2;
@@ -119,14 +119,14 @@ main()
   GameState *game_state;
 
   if (SDL_initialise(&sdl_context) != 0) {
-    LogErrString("failed to initliase SDL");
+    LogErrStr("failed to initliase SDL");
     err_code = 1;
     goto err1;
   }
 
   game_state = (GameState *)calloc(1, sizeof(GameState));
   if (!game_state) {
-    LogErrString("failed to allocate memory for the game state!");
+    LogErrStr("failed to allocate memory for the game state!");
     err_code = 2;
     goto err2; 
   }
@@ -154,6 +154,7 @@ main()
     if ((1000.0 / FPS) > (SDL_GetTicks() - start_tick)) {
       SDL_Delay((1000.0 / FPS) - (F64)(SDL_GetTicks() - start_tick));
     }
+    // global_running = false;
   }
 
   game_die(game_state);

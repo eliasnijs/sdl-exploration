@@ -24,10 +24,10 @@
 #define EvalPrint(x)    (printf("%s = %d\n", #x, (int)(x)))
 
 #if ENABLE_DBGMSG
-#define LogErrString(s) (printf("%s, %d, %s:   %s\n",\
+#define LogErrStr(s) (printf("%s, %d, %s:   %s\n",\
                          __FILE__, __LINE__, __PRETTY_FUNCTION__, s))
 #else
-#define LogErrString(s)
+#define LogErrStr(s)
 #endif 
 
 #define internal static 
